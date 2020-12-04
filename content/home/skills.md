@@ -17,20 +17,26 @@ subtitle = ""
 [[feature]]
   icon = "r-project"
   icon_pack = "fab"
-  name = "R"
-  description = "90%"
+  name = "R and the Tidyverse"
+  description = "Visualization, cleaning, modeling, GIS, and more"
+  
+[[feature]]
+  icon = "database"
+  icon_pack = "fas"
+  name = "SQL"
+  description = "Data management and modeling"
   
 [[feature]]
   icon = "chart-line"
   icon_pack = "fas"
-  name = "Statistics"
-  description = "100%"  
+  name = "Dashboarding"
+  description = "Tableau, Data Studio, htmlwidgets, Sheets"
   
 [[feature]]
-  icon = "camera-retro"
+  icon = "democrat"
   icon_pack = "fas"
-  name = "Photography"
-  description = "10%"
+  name = "Campaigning"
+  description = "VoteBuilder, Civis, ThruText, HubDialer, and more"
 
 # Uncomment to use emoji icons.
 # [[feature]]
