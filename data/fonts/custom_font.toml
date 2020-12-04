@@ -1,0 +1,11 @@
+# Font style metadata
+name = "Minimal"
+
+# Optional Google font URL
+google_fonts = "Inter:400,400italic,700|Roboto+Mono|Roboto+Slab"
+
+# Font families
+heading_font = "Roboto Slab"
+body_font = "Inter"
+nav_font = "Inter"
+mono_font = "Roboto Mono"
