@@ -18,27 +18,50 @@ date_format = "Jan 2006"
 #   Leave `date_end` empty if it's your current employer.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[experience]]
-  title = "CEO"
-  company = "GenCoin"
-  company_url = ""
-  location = "California"
-  date_start = "2017-01-01"
-  date_end = ""
+  title = "Deputy Data Director"
+  company = "Montana Democratic Party (Coordinated Campaign)"
+  company_url = "www.montanademocrats.org"
+  location = "Helena, MT"
+  date_start = "2020-06-11"
+  date_end = "2020-11-30"
   description = """
-  Responsibilities include:
-  
-  * Analysing
-  * Modelling
-  * Deploying
+  * Developed a full analytics stack in Civis, including a custom data mart for managing secretary of state data.
+  * Served as point-person for the voter protection team and designed the infrastructure behind our ballot chase system.
+  * Provided mobilization and analytical support to the field, Native vote, and digital teams.
   """
 
 [[experience]]
-  title = "Professor"
-  company = "University X"
-  company_url = ""
-  location = "California"
-  date_start = "2016-01-01"
-  date_end = "2016-12-31"
-  description = """Taught electronic engineering and researched semiconductor physics."""
-
+  title = "Data Analyst"
+  company = "Adaptive Biotechnologies"
+  company_url = "www.adaptivebiotech.com"
+  location = "Seattle, WA"
+  date_start = "2018-11-19"
+  date_end = "2020-06-05"
+  description = """
+  * Provided business analytics to stakeholders across the company, from finance to sales to lab ops.
+  * Contributed to reporting infrastructure with data mart development, data source design, and report creation.
+  """
+[[experience]]
+  title = "Data Director (part-time)"
+  company = "The People for Shaun Scott"
+  company_url = "https://ballotpedia.org/Shaun_Scott"
+  location = "Seattle, WA"
+  date_start = "2019-05-15"
+  date_end = "2019-11-15"
+  description = """
+  * Provided analytical and technical support to our grassroots city council campaign.
+  * Reported on organizing and fundraising efforts and administered VoteBuilder and Hustle for the campaign.
+  """
+[[experience]]
+  title = "Deputy Data Director"
+  company = "Nevada State Democratic Party (Coordinated Campaign)"
+  company_url = "www.nvdems.com"
+  location = "Las Vegas, NV"
+  date_start = "2018-08-01"
+  date_end = "2018-11-16"
+  description = """
+  * Built dashboards and reports to inform field and voter protection strategy.
+  * Prioritized staging locations and polling sites during GOTV.
+  """
+  
 +++
