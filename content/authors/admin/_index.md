@@ -62,9 +62,6 @@ highlight_name: false
 #- Researchers
 #- Visitors
 ---
+# Hello! 
 
-# __Hello!__
-
-I'm a progressive data analyst in Seattle. I recently worked as deputy data director for the [Montana Democratic Party's](https://montanademocrats.org/) 2020 coordinated campaign in Helena. Before that, I was a data analyst at [Adaptive Biotechnologies](https://adaptivebiotech.com) and also worked part-time as the data director for [Shaun Scott's](https://ballotpedia.org/Shaun_Scott) 2019 city council campaign in Seattle. I got my start in politics as a data associate with the [Nevada State Democratic Party's](https://nvdems.com/) 2018 coordinated campaign, and was promoted to deputy data director that fall.
-
-I graduated with honors from Stanford University in 2018 and am interested in the politics of climate justice, urbanism, voting rights, and more. I'm always looking to apply my data skills to help advance progressive causes and better understand issues of injustice in America.
+I’m a progressive data analyst in Seattle. I worked on two of the top Democratic Senate races of the Trump era and helped build business intelligence at a rapidly growing biotech company. This site is where I'll share some of my work and things I'm learning, mostly using R. Learn more about me {{< hl >}}[here](/about_me/).{{< /hl >}}
