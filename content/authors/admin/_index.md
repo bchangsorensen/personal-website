@@ -64,4 +64,4 @@ highlight_name: false
 ---
 # Hello! 
 
-I’m a progressive data analyst in Seattle. I worked on two of the top Democratic Senate races of the Trump era and helped build business intelligence at a rapidly growing biotech company. This site is where I'll share some of my work and things I'm learning, mostly using R. Learn more about me {{< hl >}}[here](/about_me/).{{< /hl >}}
+I’m a progressive data analyst in Seattle. I worked on two of the top Democratic Senate races of the Trump era and helped build business intelligence at a rapidly growing biotech company. This site is where I'll share some of my work and the things I'm learning along the way, mostly using R. You can learn more about me {{< hl >}}[here](/about_me/).{{< /hl >}}
