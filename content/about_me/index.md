@@ -1,14 +1,27 @@
 ---
-title: Hi! I'm Benjamin.
+# An instance of the Blank widget.
+# Documentation: https://sourcethemes.com/academic/docs/page-builder/
+#widget: blank
 
-share: false  # Show social sharing links?
-profile: false  # Show author profile?
-comments: false  # Show comments?
+# Activate this widget? true/false
+active: true
+
+# This file represents a page section.
+headless: false
+
+# Order that this section appears on the page.
+weight: 15
+
+title: Hi! I'm Benjamin.
 
 # Optional header image (relative to `static/media/` folder).
 header:
-  caption: "_Post-election snowshoeing near Helena._"
+  caption: "_Post-election snowshoeing outside Helena._"
   image: "macdonald_pass.JPG"
+  
+# Design 
+design:
+  columns: "1"
 ---
 
 I'm a progressive data analyst in Seattle. I grew up in Palo Alto before heading down the road to {{< hl >}}Stanford University{{< /hl >}} for undergrad, where I studied political science, statistics, and history. I wrote an honors thesis about leaks as disinformation, centered on an online experiment I designed and implemented in my senior year. 
