@@ -1,0 +1,20 @@
+/* About page */
+#about {
+  .main-content {
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+    animation-delay: 1s;
+  }
+  .avatar {
+    animation: slideInLeft 1s forwards;
+    animation-delay: 0s;
+  }
+  .portrait-title {
+    animation: slideInLeft 1s forwards;
+    animation-delay: 0s;
+  }
+  .network-icon {
+    animation: slideInLeft 1s forwards;
+    animation-delay: 0s;
+  }
+}
