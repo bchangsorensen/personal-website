@@ -6,26 +6,26 @@ title: Benjamin Chang Sorensen
 superuser: true
 
 # Role/position
-role: Progressive Data Analyst
+role: Seattle, WA
 
 # Organizations/Affiliations
-organizations:
-- name: Stanford University '18
-  url: ""
+#organizations:
+#- name: Stanford University '18
+#  url: ""
 
 # Short bio (displayed in user profile at end of posts)
-bio: Progressive data analyst interested in campaigns, climate justice, and more. 
+# bio: Progressive data analyst interested in campaigns, climate justice, and more. 
 
-interests:
-- R and the Tidyverse
-- Climate justice and urban development
-- Democratic politics and campaigning
+#interests:
+#- R and the Tidyverse
+#- Climate justice and urban development
+#- Democratic politics and campaigning
 
-education:
-  courses:
-  - course: BA in Political Science with Honors
-    institution: Stanford University
-    year: 2018
+#education:
+#  courses:
+#  - course: BA in Political Science with Honors
+#    institution: Stanford University
+#    year: 2018
 
 # Social/Academic Networking
 # For available icons, see: https://sourcethemes.com/academic/docs/page-builder/#icons
