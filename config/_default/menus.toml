@@ -9,11 +9,6 @@
   weight = 10
 
 [[main]]
-  name = "About Me"
-  url = "about_me"
-  weight = 15
-
-[[main]]
   name = "Posts"
   url = "#posts"
   weight = 20
@@ -27,6 +22,11 @@
   name = "Contact"
   url = "#contact"
   weight = 60
+
+[[main]]
+  name = "About Me"
+  url = "about_me"
+  weight = 70
 
 # Link to a PDF of your resume/CV from the menu.
 # To enable, copy your resume/CV to `static/media/cv.pdf` and uncomment the lines below.
