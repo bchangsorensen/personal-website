@@ -10,13 +10,13 @@ public/
 .Rhistory
 
 # Data
-data/*.csv
-data/*.shp
-data/*.cpg
-data/*.prj
-data/*.shx
-data/*.shp.xml
-data/*.iso.xml
+data/**/*.csv
+data/**/*.shp
+data/**/*.cpg
+data/**/*.prj
+data/**/*.shx
+data/**/*.shp.xml
+data/**/*.iso.xml
 
 # knitr and R markdown default cache directories
 *_cache/
