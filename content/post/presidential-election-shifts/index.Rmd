@@ -1,0 +1,169 @@
+---
+title: "Plotting NYT Upshot style presidential election shift maps, 2000-2016"
+date: "2019-08-17"
+authors: 
+ - admin
+categories: ["R", "GIS"]
+codefolding_show: show
+image:
+  preview_only: true
+tags: ["r", "visualization", "gis"]
+summary: "Recreating a popular visualization used by the NYT Upshot team."
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, error = FALSE)
+```
+
+Back when I was in the DCL, some of my favorite assignments involved recreating graphics from *The Upshot* at the *The New York Times.* One of their [graphics](https://www.nytimes.com/interactive/2016/11/08/us/elections/how-trump-pushed-the-election-map-to-the-right.html) from 2016 artfully compared county-level election results between the last two presidential races. I like this style of electoral map because it draws the viewer's attention to the change taking place on election night, and it indicates which direction the country is headed at a glance.
+
+Anyway, below is my quick and dirty attempt at recreating *The Upshot*'s map for 2016. I've also mapped the results of previous presidential elections going back to 2000, and have included some more standard, single-year electoral maps as well, just for comparison's sake. Each plot reflects the margin of victory (or the change in the margin of victory) at the county level, with third party votes excluded. 
+
+```{r}
+library(tidyverse)
+library(sf)
+setwd("~/personal-website/content/post/presidential-election-shifts/")
+
+## Read data
+# Election data source: MIT Election Data and Science Lab, 2018, "County Presidential Election Returns 2000-2016", https://doi.org/10.7910/DVN/VOQCHQ, Harvard Dataverse, V5, UNF:6:cp3645QomksTRA+qYovIDQ== [fileUNF]
+file_pres <- "data/countypres_2000-2016.csv"
+pres <- read_csv(file_pres) %>% 
+  rename_all(str_to_lower) %>%
+  mutate(geoid = str_pad(fips, 5, "left", "0")) %>% 
+  filter(!state_po %in% c("AK", "HI"))
+# State FIPS data source: https://gist.github.com/dantonnoriega/bf1acd2290e15b91e6710b6fd3be0a53
+file_state_fips <- "data/us-state-ansi-fips.csv"
+state_fips <- read_csv(file_state_fips) 
+# County shapefile data source: https://catalog.data.gov/dataset/tiger-line-shapefile-2017-nation-u-s-current-county-and-equivalent-national-shapefile
+file_counties <- "data/tl_2017_us_county/tl_2017_us_county.shp"
+county <- read_sf(file_counties) %>% 
+  rename_all(str_to_lower) %>% 
+  mutate_if(is.factor, as.character) %>% 
+  inner_join(state_fips, by = c("statefp" = "st")) %>% 
+  filter(!stusps %in% c("AK", "HI")) %>%  # only interested in continental US
+  mutate(geoid = if_else(geoid == "46102", "46113", geoid)) # Data fix
+```
+
+```{r}
+## Clean and summarize data
+pres_sum <- 
+  pres %>%
+  filter(office == "President") %>%  
+  filter(party %in% c("democrat", "republican")) %>%
+  spread(key = party, value = candidatevotes) %>% 
+  select(-office, -candidate) %>% 
+  group_by(year, state_po, geoid, county, totalvotes) %>% 
+  summarise(
+    rep_votes = sum(republican, na.rm = TRUE),
+    dem_votes = sum(democrat, na.rm = TRUE)
+  ) %>% 
+  ungroup() %>% 
+  mutate(rep_margin = rep_votes / totalvotes - dem_votes / totalvotes) %>% 
+  arrange(geoid) %>% 
+  spread(key = year, value = rep_margin) %>% 
+  group_by(state_po, geoid, county) %>% 
+  summarise(
+    rep_2000 = sum(`2000`, na.rm = TRUE),
+    rep_2004 = sum(`2004`, na.rm = TRUE),
+    rep_2008 = sum(`2008`, na.rm = TRUE),
+    rep_2012 = sum(`2012`, na.rm = TRUE),
+    rep_2016 = sum(`2016`, na.rm = TRUE)
+  ) %>% 
+  ungroup()
+geo_results <- 
+  county %>% 
+  select(geoid) %>% 
+  mutate(center = st_centroid(geometry) %>% as.character()) %>% 
+  mutate(
+    lat = str_extract(center, "(?<=c\\().*(?=\\,)") %>% as.double(),
+    lon = str_extract(center, "(?<=\\s).*(?=\\))") %>% as.double()
+  ) %>% 
+  select(-center) %>% 
+  left_join(pres_sum, by = "geoid") 
+```
+
+```{r}
+## Plot shift in vote share
+plot_shift <- function(pre, post) { 
+  var_pre <- enquo(pre)
+  var_post <- enquo(post)
+  geo_results %>% 
+    mutate(shift := (!!var_post) - (!!var_pre)) %>% 
+    ggplot() + 
+    geom_sf(size = .05, fill = NA) +
+    geom_curve(
+      data = . %>% filter(shift <= 0),
+      aes(
+        lat, 
+        lon,
+        color = shift > 0, 
+        xend = lat + 4 * shift,
+        yend = lon + .5 * abs(shift)
+      ), 
+      arrow = arrow(length = unit(.075, "cm"), angle = 15),
+      curvature = -.2,
+      show.legend = FALSE,
+      size = .3
+    ) + 
+    geom_curve(
+      data = . %>% filter(shift > 0),
+      aes(
+        lat, 
+        lon,
+        color = shift > 0, 
+        xend = lat + 4 * shift,
+        yend = lon + .5 * abs(shift)
+      ), 
+      arrow = arrow(length = unit(.1, "cm"), angle = 15),
+      curvature = .2,
+      show.legend = FALSE,
+      size = .3
+    ) + 
+    coord_sf(datum = NA) +
+    scale_color_manual(values = c("#1A80C4", "#CC3D41")) +
+    theme_void() + 
+    labs(
+      title = paste0(
+        "Shift in county-level presidential vote share, ",
+        ensym(pre) %>% str_extract("\\d+"),
+        "-",
+        ensym(post) %>% str_extract("\\d+")
+      )
+    )
+}
+```
+
+```{r}
+## Plot vote share
+plot_results <- function(elec) { 
+  var_elec <- enquo(elec)
+  geo_results %>%
+    ggplot() +
+    geom_sf(aes_string(fill = var_elec), size = 0, show.legend = FALSE) +
+    coord_sf(datum = NA) +
+    scale_fill_gradient2(
+      low = "#1A80C4",
+      high = "#CC3D41"
+    ) +
+    theme_void() +
+    labs(
+      title = paste0(
+        "County-level popular vote, ",
+        ensym(elec) %>% str_extract("\\d+"),
+        " presidential election"
+      )
+    )
+}
+```
+
+```{r}
+## Plot results
+plot_shift(rep_2012, rep_2016) # arrow map
+plot_results(rep_2016) # traditional map
+plot_shift(rep_2008, rep_2012)
+plot_results(rep_2012)
+plot_shift(rep_2004, rep_2008)
+plot_results(rep_2008)
+plot_shift(rep_2000, rep_2004)
+plot_results(rep_2004)
+```
