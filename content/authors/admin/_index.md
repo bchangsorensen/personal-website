@@ -34,7 +34,7 @@ role: Seattle, WA
 social:
 - icon: envelope
   icon_pack: fas
-  link: '/#contact'  # For a direct email link, use "mailto:bsorensen96@gmail.com".
+  link: '/#contact'  # For a direct email link, use "mailto:bchangsorensen@gmail.com".
 - icon: twitter
   icon_pack: fab
   link: https://twitter.com/bsorensen96

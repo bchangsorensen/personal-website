@@ -15,7 +15,7 @@ In June of 2020 I decided to jump back into politics full-time with the {{< hl >
 
 I love to work in R and the Tidyverse, a preference I picked up in Stanford's [Data Challenge Lab](https://dcl-docs.stanford.edu/home/)[^1] and which I'll probably never kick thanks to all the cool packages being developed by the R community (like `blogdown`, which helped me build this site). Outside of R I've worked extensively in SQL, Tableau, Sheets, and a bunch of campaign technologies like VoteBuilder and Civis. I'm always looking to learn more! 
 
-Lastly, I'm motivated by some of the issues that are most important to me: tackling the climate crisis, fixing our broken democracy, and fighting for racial equality. I'm also motivated by organizers and activists -- people in the fight -- and I believe that together we can make some progress and change some minds. If that sounds like you, [please get in touch!](mailto:bsorensen96@gmail.com)
+Lastly, I'm motivated by some of the issues that are most important to me: tackling the climate crisis, fixing our broken democracy, and fighting for racial equality. I'm also motivated by organizers and activists -- people in the fight -- and I believe that together we can make some progress and change some minds. If that sounds like you, [please get in touch!](mailto:bchangsorensen@gmail.com)
 
 
 [^1]: I'm deeply indebted to Bill Behrman and Hadley Wickham for developing the Data Challenge Lab and contributing so much to data science education. The learning materials they put together are open source, and I couldn't recommend them more.
