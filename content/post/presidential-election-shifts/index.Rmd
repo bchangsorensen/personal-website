@@ -4,11 +4,11 @@ date: "2019-08-17"
 authors: 
  - admin
 categories: ["R", "GIS"]
-codefolding_show: show
 image:
   preview_only: true
 tags: ["r", "visualization", "gis"]
 summary: "Recreating a popular visualization used by the NYT Upshot team."
+share: false
 ---
 
 ```{r setup, include=FALSE}
