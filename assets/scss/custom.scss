@@ -1,4 +1,4 @@
-/* About page */
+/* Home page */
 #about {
   .main-content {
     opacity: 0;
@@ -18,15 +18,21 @@
     animation-delay: 0s;
   }
 }
+
 /* Nav Bar */
 .navbar {
   box-shadow: none
 }
 
-/* Skills */
+/* About Me */
 
 .featurette-content {
   max-width: 200px;
   margin: auto
 }
 
+.home-section-bg {
+  opacity: 0;
+  animation: fadeIn 1s forwards;
+  animation-delay: 0.5s;
+}

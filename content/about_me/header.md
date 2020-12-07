@@ -29,5 +29,12 @@ weight = 10  # Order that this section will appear.
   image_parallax = true  # Use a fun parallax-like fixed background effect? true/false
   
 +++
+<!-- Animate.css -->
+<head>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css"
+  />
+</head>
 
-<div style="height: 350px"></div>
+<div class = "hero" style="height: 350px"></div>
