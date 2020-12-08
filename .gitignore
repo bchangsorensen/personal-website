@@ -8,8 +8,10 @@ public/
 
 # R
 .Rhistory
+.Renviron
 
 # Data
+**/data/**/*.rds
 **/data/**/*.csv
 **/data/**/*.shp
 **/data/**/*.cpg
