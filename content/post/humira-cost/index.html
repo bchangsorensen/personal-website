@@ -11,8 +11,6 @@ tags: ["r", "visualization", "socrata", "reactable"]
 
 authors: 
 - admin
-
-outputType: "html"
 ---
 
 <link href="{{< relref "post/humira-cost/index.html" >}}index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
@@ -27,7 +25,7 @@ outputType: "html"
 <script src="{{< relref "post/humira-cost/index.html" >}}index_files/widgetframe-binding/widgetframe.js"></script>
 
 
-<p>Earlier this year I joined the millions of Americans who regularly take Humira to treat conditions like rheumatoid arthritis, Crohn's, psoriasis, and in my case, ankylosing spondylitis. I'm lucky enough to say that it's done wonders for my health and allowed me to reimagine what my body is capable of, from running to backpacking to simply waking up each morning pain-free.</p>
+<p>Earlier this year I joined the many thousands of Americans who regularly take Humira to treat conditions like rheumatoid arthritis, Crohn's, psoriasis, and in my case, ankylosing spondylitis. I'm lucky enough to say that it's done wonders for my health and allowed me to reimagine what my body is capable of, from running to backpacking to simply waking up each morning pain-free.</p>
 <p>But Humira comes at a cost. When my doctor first recommended it to me, I was shocked to learn that it's one of the biggest selling drugs in the world, bringing in nearly <a href="https://www.statista.com/statistics/318206/revenue-of-humira/">$20 billion</a> in revenues in 2019 alone. I braced myself for the worst, and looked up the average cost of a one-month supply: <strong>$5,800.</strong></p>
 <p>Once I got over the sticker shock, I realized that my insurance would cover most of the cost, and I later discovered that with the drugmaker Abbvie's patient assistance program I could even lower my co-pay to $5 per shipment. This makes me, undoubtedly, one of the lucky ones. Less fortunate are the 30 million Americans without health insurance who couldn't dream of paying out-of-pocket for Humira, or the well over 100 million Americans who have non-commercial insurance (e.g. Medicare, Medicaid, VA health benefits) and therefore are ineligible for Abbvie's reduced co-pay.</p>
 <p>But I still wondered: Why is Humira so expensive? It's partly explained by the monopoly it's maker, Abbvie, has maintained in the US. While five generic alternatives have been approved by the FDA and some are already on the market in Europe, Abbvie has prevented them from reaching the hands of American patients through a controversial patent strategy. Per <em><a href="https://www.washingtonpost.com/business/economy/why-humiras-price-keeps-rising-despite-fda-approval-of-generic-competition/2020/01/07/549ed0ce-2e3a-11ea-bcb3-ac6482c4a92f_story.html">The Washington Post</a></em>:</p>
@@ -271,7 +269,7 @@ df %&gt;%
   theme_minimal()</code></pre>
 <p><img src="{{< relref "post/humira-cost/index.html" >}}index_files/figure-html/unnamed-chunk-9-3.png" width="672" /></p>
 <p>Lastly, I wanted to see if the cost varied by geography at all. Surprisingly, there's some fairly significant variation: Delaware has the highest average costs at $7,035.66, whereas in Hawai'i the average cost is only $5,336.44. I'm not sure I needed another reason to not move to Delaware, but duly noted.</p>
-<p>Unsurprisingly, though, costs are rising uniformly across the country. And while some states have bumpier adoption curves, the market for Humira is clearly growing as well. With its anti-compettive market protections in place, it looks like Humira will continue to be a top dollar product for Abbvie, who have little incentive to lower costs under current circumstances — a cause for concern for the hundreds of thousands of Humira patients who rely on the drug for pain management.</p>
+<p>Unsurprisingly, though, costs are rising uniformly across the country. And while some states have bumpier adoption curves, the market for Humira is clearly growing as well. With its anti-compettive market protections in place, it looks like Humira will continue to be a top dollar product for Abbvie, who have little incentive to lower costs under current circumstances — a cause for concern for the many thousands of Humira patients who rely on the drug for pain management.</p>
 <pre class="r"><code>df_geo &lt;-
   df %&gt;% 
   filter(!nppes_provider_state %in% c(&quot;XX&quot;, &quot;ZZ&quot;, &quot;GU&quot;, &quot;VI&quot;, &quot;PR&quot;)) %&gt;% 

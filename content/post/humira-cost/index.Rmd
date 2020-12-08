@@ -11,8 +11,6 @@ tags: ["r", "visualization", "socrata", "reactable"]
 
 authors: 
 - admin
-
-outputType: "html"
 ---
 
 ```{r setup, include=FALSE}
