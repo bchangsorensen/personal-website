@@ -11,6 +11,8 @@ tags: ["r", "visualization", "socrata", "reactable"]
 
 authors: 
 - admin
+
+outputType: "html"
 ---
 
 ```{r setup, include=FALSE}
@@ -31,14 +33,22 @@ What does this monopoly mean for the cost of Humira? And is there any sign that 
 
 ## Loading packages
 
-I'm trying out a few new packages in this post. `RSocrata` makes it super easy to hit the [Data.CMS.gov API](https://dev.socrata.com/foundry/data.cms.gov/mhdd-npjx), which I used to query provider-level Medicare claim summaries from 2013-2018. `reactable` and `htmltools` work together to make beautiful and highly styleable tables, and`sparkline` allows for easy row-level visualizations. 
+I'm trying out a few new packages in this post. `RSocrata` makes it super easy to hit the [Data.CMS.gov API](https://dev.socrata.com/foundry/data.cms.gov/mhdd-npjx), which I used to query provider-level Medicare claim summaries from 2013-2018. `reactable` and `htmltools` work together to make beautiful and highly styleable tables, and`sparkline` allows for easy row-level visualizations. Lastly, `widgetframe` is a handy package that embeds widgets inside iframes, meaning I can avoid the jQuery conflicts described in this chapter of [the `blogdown` book](https://bookdown.org/yihui/blogdown/html-widgets.html) (this is only relevant if you're loading multiple htmlwidgets on a single page). 
 
 ```{r}
 library(tidyverse)
 library(RSocrata)
 library(reactable)
 library(htmltools)
+library(widgetframe)
 library(sparkline)
+```
+
+```{css, echo=FALSE}
+.summary-table {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+}
 ```
 
 ## The data 
@@ -315,9 +325,9 @@ df_geo <-
 
 Lastly, I wanted to see if the cost varied by geography at all. Surprisingly, there's some fairly significant variation: Delaware has the highest average costs at `r scales::dollar(filter(df_geo, state == "DE")$avg_cost_18)`, whereas in Hawai'i the average cost is only `r scales::dollar(filter(df_geo, state == "HI")$avg_cost_18)`. I'm not sure I needed another reason to not move to Delaware, but duly noted.
 
-Unsurprisingly, though, costs are rising uniformly across the country. And while some states have bumpier adoption curves, the market for Humira is clearly growing as well. With its anti-compettive market protections in place, it looks like Humira will continue to be a top dollar product for Abbvie, who have little incentive to lower costs under current circumstances -- a cause for concern for the hundreds of thousands of Humira patients who rely on the drug for pain management.
+Unsurprisingly, though, costs are rising uniformly across the country. And while some states have bumpier adoption curves, the market for Humira is clearly growing as well. With its anti-compettive market protections in place, it looks like Humira will continue to be a top dollar product for Abbvie, who have little incentive to lower costs under current circumstances — a cause for concern for the hundreds of thousands of Humira patients who rely on the drug for pain management.
 
-```{r}
+```{r results='asis'}
 df_geo <-
   df %>% 
   filter(!nppes_provider_state %in% c("XX", "ZZ", "GU", "VI", "PR")) %>% 
@@ -341,7 +351,7 @@ df_geo <-
   ungroup() %>% 
   select(state, total_claims_18, total_claims_change, total_claims_year, avg_cost_18, avg_cost_change, avg_cost_year)
 
-df_geo %>%
+  df_geo %>%
   reactable(
     class = "summary-table",
     pagination = FALSE,
@@ -349,7 +359,7 @@ df_geo %>%
       state = colDef(name = "State", headerClass = "header", align = "left"),
       total_claims_18 = colDef(
         name = "Total Claims in 2018",
-        align = "left"
+        align = "center"
       ),
       total_claims_change = colDef(
         name = "Change since 2013",
@@ -360,11 +370,12 @@ df_geo %>%
         name = "Trend",
         cell = function(value, index) {
           sparkline(df_geo$total_claims_year[[index]], type = "bar", barColor = "#b1005e")
-        }
+        },
+        align = "center"
       ),
       avg_cost_18 = colDef(
         name = "Avg. Cost in 2018",
-        align = "left",
+        align = "center",
         format = colFormat(currency = "USD")
       ),
       avg_cost_change = colDef(
@@ -376,10 +387,12 @@ df_geo %>%
         name = "Trend",
         cell = function(value, index) {
           sparkline(df_geo$avg_cost_year[[index]], lineColor = "#b1005e", fillColor = "#b1005e")
-        }
+        },
+        align = "center"
       )
     )
-  )
+  ) %>% 
+  frameWidget()
 ```
 
 If Abbvie's "patent thicket" strategy continues to prevail (and they've already successfully defended it [in court](https://news.bloomberglaw.com/ip-law/abbvie-dodges-antitrust-challenge-to-its-humira-patent-thicket)), the domestic cost of Humira is likely to keep rising. Like most conditions treated by Humira, my ankylosing spondylitis is chronic, meaning that I'll need to find ways to keep paying for Humira for the foreseeable future or else forgo care. While I'm in a strong position at the moment, it's not hard to imagine the potential constraints I'll face if anything about my current insurance situation changes.
