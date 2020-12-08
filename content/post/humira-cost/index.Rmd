@@ -19,7 +19,7 @@ outputType: "html"
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, error = FALSE)
 ```
 
-Earlier this year I joined the millions of Americans who regularly take Humira to treat conditions like rheumatoid arthritis, Crohn's, psoriasis, and in my case, ankylosing spondylitis. I'm lucky enough to say that it's done wonders for my health and allowed me to reimagine what my body is capable of, from running to backpacking to simply waking up each morning pain-free.
+Earlier this year I joined the many thousands of Americans who regularly take Humira to treat conditions like rheumatoid arthritis, Crohn's, psoriasis, and in my case, ankylosing spondylitis. I'm lucky enough to say that it's done wonders for my health and allowed me to reimagine what my body is capable of, from running to backpacking to simply waking up each morning pain-free.
 
 But Humira comes at a cost. When my doctor first recommended it to me, I was shocked to learn that it's one of the biggest selling drugs in the world, bringing in nearly [$20 billion](https://www.statista.com/statistics/318206/revenue-of-humira/) in revenues in 2019 alone. I braced myself for the worst, and looked up the average cost of a one-month supply: __$5,800.__ 
 
@@ -325,7 +325,7 @@ df_geo <-
 
 Lastly, I wanted to see if the cost varied by geography at all. Surprisingly, there's some fairly significant variation: Delaware has the highest average costs at `r scales::dollar(filter(df_geo, state == "DE")$avg_cost_18)`, whereas in Hawai'i the average cost is only `r scales::dollar(filter(df_geo, state == "HI")$avg_cost_18)`. I'm not sure I needed another reason to not move to Delaware, but duly noted.
 
-Unsurprisingly, though, costs are rising uniformly across the country. And while some states have bumpier adoption curves, the market for Humira is clearly growing as well. With its anti-compettive market protections in place, it looks like Humira will continue to be a top dollar product for Abbvie, who have little incentive to lower costs under current circumstances — a cause for concern for the hundreds of thousands of Humira patients who rely on the drug for pain management.
+Unsurprisingly, though, costs are rising uniformly across the country. And while some states have bumpier adoption curves, the market for Humira is clearly growing as well. With its anti-compettive market protections in place, it looks like Humira will continue to be a top dollar product for Abbvie, who have little incentive to lower costs under current circumstances — a cause for concern for the many thousands of Humira patients who rely on the drug for pain management.
 
 ```{r results='asis'}
 df_geo <-
