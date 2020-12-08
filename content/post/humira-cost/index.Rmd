@@ -21,9 +21,9 @@ Earlier this year I joined the many thousands of Americans who regularly take Hu
 
 But Humira comes at a cost. When my doctor first recommended it to me, I was shocked to learn that it's one of the biggest selling drugs in the world, bringing in nearly [$20 billion](https://www.statista.com/statistics/318206/revenue-of-humira/) in revenues in 2019 alone. I braced myself for the worst, and looked up the average cost of a one-month supply: __$5,800.__ 
 
-Once I got over the sticker shock, I realized that my insurance would cover most of the cost, and I later discovered that with the drugmaker Abbvie's patient assistance program I could even lower my co-pay to $5 per shipment. This makes me, undoubtedly, one of the lucky ones. Less fortunate are the 30 million Americans without health insurance who couldn't dream of paying out-of-pocket for Humira, or the well over 100 million Americans who have non-commercial insurance (e.g. Medicare, Medicaid, VA health benefits) and are therefore ineligible for Abbvie's reduced co-pay.
+Once I got over the sticker shock, I realized that my insurance would cover most of the cost, and I later discovered that with the drugmaker Abbvie's patient assistance program I could lower my co-pay to just $5 per shipment. This makes me, undoubtedly, one of the lucky ones. Less fortunate are the 30 million Americans without health insurance who couldn't dream of paying out-of-pocket for Humira, or the well over 100 million Americans who have non-commercial insurance (e.g. Medicare, Medicaid, VA health benefits) and are therefore ineligible for Abbvie's reduced co-pay.
 
-But I still wondered: Why is Humira so expensive? It's partly explained by the monopoly it's maker, Abbvie, has maintained in the US. While five generic alternatives have been approved by the FDA and some are already on the market in Europe, Abbvie has prevented them from reaching the hands of American patients through a controversial patent strategy. Per _[The Washington Post](https://www.washingtonpost.com/business/economy/why-humiras-price-keeps-rising-despite-fda-approval-of-generic-competition/2020/01/07/549ed0ce-2e3a-11ea-bcb3-ac6482c4a92f_story.html)_:
+But I still wondered: Why is Humira so expensive? It's partly explained by the monopoly its maker, Abbvie, has maintained in the US. While five generic alternatives have been approved by the FDA and some are already on the market in Europe, Abbvie has prevented them from reaching the hands of American patients through a controversial patent strategy. According to _[The Washington Post:](https://www.washingtonpost.com/business/economy/why-humiras-price-keeps-rising-despite-fda-approval-of-generic-competition/2020/01/07/549ed0ce-2e3a-11ea-bcb3-ac6482c4a92f_story.html)_
 
 > Humira was approved by the FDA in 2002 and its core patents expired in 2016, according to the Biosimilars Council, a division of the Association for Accessible Medicines, which represents generic manufacturers. But AbbVie won dozens of additional patents — what critics call a “patent thicket” — that extended the exclusive market for the drug to as late as 2034, the council said.
 
@@ -31,7 +31,7 @@ What does this monopoly mean for the cost of Humira? And is there any sign that 
 
 ## Loading packages
 
-I'm trying out a few new packages in this post. `RSocrata` makes it super easy to hit the [Data.CMS.gov API](https://dev.socrata.com/foundry/data.cms.gov/mhdd-npjx), which I used to query provider-level Medicare claim summaries from 2013-2018. `reactable` and `htmltools` work together to make beautiful and highly styleable tables, and `sparkline` allows for easy row-level visualizations. Lastly, `widgetframe` is a handy package that embeds widgets inside iframes, meaning I can avoid the jQuery conflicts described in this chapter of [the `blogdown` book](https://bookdown.org/yihui/blogdown/html-widgets.html) (this is only relevant if you're loading multiple htmlwidgets on a single page). 
+I'm trying out a few new packages in this post. `RSocrata` makes it super easy to hit the [Data.CMS.gov API](https://dev.socrata.com/foundry/data.cms.gov/mhdd-npjx), which I used to query provider-level Medicare claim summaries from 2013-2018. `reactable` and `htmltools` work together to make beautiful and highly styleable tables, and `sparkline` allows for easy row-level visualizations. Lastly, `widgetframe` is a handy package that embeds widgets inside iframes, meaning I can avoid the jQuery conflicts described in [this chapter](https://bookdown.org/yihui/blogdown/html-widgets.html) (this is only relevant if you're loading multiple htmlwidgets on a single page) of the `blogdown` book. 
 
 ```{r}
 library(tidyverse)
@@ -59,7 +59,7 @@ Per the CMS: "Although the Part D Prescriber PUF has a wealth of information on 
 
 {{% /callout %}}
 
-The CMS has a Socrata API set up to make access to the data simple after a few authentication steps. I registered for an account, created an app token, and was able start hitting the endpoint in a matter of minutes using the `RSocrata` package, which structured the calls I was making. Filtering was just a matter of appending `?[field_name]=[field_value]` to the end of the statement. I requested all records where the drug associated with the claim had the generic name _Adalimumab_, which is Humira's technical name — this allowed me to collect data on variants of Humira's service (e.g. syringe vs. pen injectors) and was more comprehensive than just searching for "Humira." Lastly, since each year's data set had a different endpoint, I collected those in a `tibble` and used `purrr::map_dfr()` to iteratively query and collate the data I wanted. Here's the script I wrote, which should be easily repuruposable for exploring other drug costs:
+The CMS has a Socrata API set up to make access to the data simple after a few authentication steps. I registered for an account, created an app token, and was able start hitting the endpoint in a matter of minutes using the `RSocrata` package, which structured the calls I was making. Filtering was just a matter of appending `?[field_name]=[field_value]` to the end of the statement. I requested all records where the drug associated with the claim had the generic name _Adalimumab_, which is Humira's technical name — this allowed me to collect data on Humira's variants (e.g. syringe vs. pen injectors) and was more comprehensive than just searching for "Humira." Lastly, since each year's data set had a different endpoint, I collected those in a `tibble` and used `purrr::map_dfr()` to iteratively query and collate the data I wanted. Here's the script I wrote, which should be easily repuruposable for exploring other drug costs:
 
 ```{r eval=FALSE}
 api_endpoints <-
@@ -109,7 +109,7 @@ df <-
 ```
 
 
-I saved the results locally so I wouldn't have to make repeated calls to the API. I ended up with a `r scales::comma(dim(df)[1])` by `r scales::comma(dim(df)[2])` data frame and, after some cleaning, was ready to start exploring variations in cost. 
+I saved the results locally so I wouldn't have to make repeated calls to the API. I ended up with a `r scales::comma(dim(df)[1])` by `r scales::comma(dim(df)[2])` data frame and, after some cleaning, was ready to start looking for variations in cost. 
 
 ```{r}
 setwd("~/personal-website/content/post/humira-cost/")
@@ -132,7 +132,7 @@ df_sum <-
 As it turns out, the cost of Humira steadily rose year over year from 2013-2018. I was shocked to see that the average cost of a single month's supply was `r scales::dollar(filter(df_sum, claim_year == "2013")$avg_cost)` in 2013, compared to `r scales::dollar(filter(df_sum, claim_year == "2018")$avg_cost)` just five years later. Notably, the price increases didn't slow down after 2016 even though Abbvie's core patents expired, since their patent thicket strategy prevented any domestic competition from entering the market.  
 
 ```{r}
-df %>% 
+df %>%
   group_by(claim_year, npi) %>% 
   summarise(
     total_claims = sum(total_claim_count, na.rm = TRUE),
