@@ -21,7 +21,7 @@ Earlier this year I joined the many thousands of Americans who regularly take Hu
 
 But Humira comes at a cost. When my doctor first recommended it to me, I was shocked to learn that it's one of the biggest selling drugs in the world, bringing in nearly [$20 billion](https://www.statista.com/statistics/318206/revenue-of-humira/) in revenues in 2019 alone. I braced myself for the worst, and looked up the average cost of a one-month supply: __$5,800.__ 
 
-Once I got over the sticker shock, I realized that my insurance would cover most of the cost, and I later discovered that with the drugmaker Abbvie's patient assistance program I could even lower my co-pay to $5 per shipment. This makes me, undoubtedly, one of the lucky ones. Less fortunate are the 30 million Americans without health insurance who couldn't dream of paying out-of-pocket for Humira, or the well over 100 million Americans who have non-commercial insurance (e.g. Medicare, Medicaid, VA health benefits) and therefore are ineligible for Abbvie's reduced co-pay.
+Once I got over the sticker shock, I realized that my insurance would cover most of the cost, and I later discovered that with the drugmaker Abbvie's patient assistance program I could even lower my co-pay to $5 per shipment. This makes me, undoubtedly, one of the lucky ones. Less fortunate are the 30 million Americans without health insurance who couldn't dream of paying out-of-pocket for Humira, or the well over 100 million Americans who have non-commercial insurance (e.g. Medicare, Medicaid, VA health benefits) and are therefore ineligible for Abbvie's reduced co-pay.
 
 But I still wondered: Why is Humira so expensive? It's partly explained by the monopoly it's maker, Abbvie, has maintained in the US. While five generic alternatives have been approved by the FDA and some are already on the market in Europe, Abbvie has prevented them from reaching the hands of American patients through a controversial patent strategy. Per _[The Washington Post](https://www.washingtonpost.com/business/economy/why-humiras-price-keeps-rising-despite-fda-approval-of-generic-competition/2020/01/07/549ed0ce-2e3a-11ea-bcb3-ac6482c4a92f_story.html)_:
 
@@ -31,7 +31,7 @@ What does this monopoly mean for the cost of Humira? And is there any sign that 
 
 ## Loading packages
 
-I'm trying out a few new packages in this post. `RSocrata` makes it super easy to hit the [Data.CMS.gov API](https://dev.socrata.com/foundry/data.cms.gov/mhdd-npjx), which I used to query provider-level Medicare claim summaries from 2013-2018. `reactable` and `htmltools` work together to make beautiful and highly styleable tables, and`sparkline` allows for easy row-level visualizations. Lastly, `widgetframe` is a handy package that embeds widgets inside iframes, meaning I can avoid the jQuery conflicts described in this chapter of [the `blogdown` book](https://bookdown.org/yihui/blogdown/html-widgets.html) (this is only relevant if you're loading multiple htmlwidgets on a single page). 
+I'm trying out a few new packages in this post. `RSocrata` makes it super easy to hit the [Data.CMS.gov API](https://dev.socrata.com/foundry/data.cms.gov/mhdd-npjx), which I used to query provider-level Medicare claim summaries from 2013-2018. `reactable` and `htmltools` work together to make beautiful and highly styleable tables, and `sparkline` allows for easy row-level visualizations. Lastly, `widgetframe` is a handy package that embeds widgets inside iframes, meaning I can avoid the jQuery conflicts described in this chapter of [the `blogdown` book](https://bookdown.org/yihui/blogdown/html-widgets.html) (this is only relevant if you're loading multiple htmlwidgets on a single page). 
 
 ```{r}
 library(tidyverse)
@@ -51,7 +51,7 @@ library(sparkline)
 
 ## The data 
 
-Medicare Part D is the section of Medicare that provides drug coverage to enrollees. Unlike for prescriptions obtained through private plans, Medicare claim data is made public each year in summarized forms. For my purposes, I decided to look at the provider- and service-level [Medicare Provider Utilization and Payment Data: Part D Prescriber](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber) data avaialble from the CMS. Data sets are available for each year between 2013 and 2018. Each row describes a medical service performed by a given provider and the number of Medicare claims made that year, as well as their total cost. 
+Medicare Part D is the section of Medicare that provides drug coverage to enrollees. Unlike for prescriptions obtained through private plans, Medicare prescription claims data is made public each year in summarized forms. For my purposes, I decided to look at the provider- and service-level [Medicare Provider Utilization and Payment Data: Part D Prescriber](https://www.cms.gov/Research-Statistics-Data-and-Systems/Statistics-Trends-and-Reports/Medicare-Provider-Charge-Data/Part-D-Prescriber) data avaialble from the CMS. Data sets are available for each year between 2013 and 2018. Each row describes a medical service performed by a given provider and the number of Medicare claims made that year, as well as their total cost. 
 
 {{% callout note %}}
 
@@ -59,7 +59,7 @@ Per the CMS: "Although the Part D Prescriber PUF has a wealth of information on 
 
 {{% /callout %}}
 
-The CMS has a Socrata API set up to make access to the data simple after a few authentication steps. I registered for an account, created an app token, and was able start hitting the endpoint in a matter of minutes using the `RSocrata` package, which structured the calls I was making. Filtering was just a matter of appending `?[field_name]=[field_value]` to the end of the statement. I requested all records where the drug associated with the claim had the generic name _Adalimumab_, which is Humira's technical name -- this allowed me to collect data on variants of Humira's service (e.g. syringe vs. pen injectors) and was more comprehensive than just searching for "Humira." Lastly, since each year's data set had a different endpoint, I collected those in a `tibble` and used `purrr::map_dfr()` to iteratively query and collate the data I wanted. Here's the script I wrote, which should be easily repuruposable for exploring other drug costs:
+The CMS has a Socrata API set up to make access to the data simple after a few authentication steps. I registered for an account, created an app token, and was able start hitting the endpoint in a matter of minutes using the `RSocrata` package, which structured the calls I was making. Filtering was just a matter of appending `?[field_name]=[field_value]` to the end of the statement. I requested all records where the drug associated with the claim had the generic name _Adalimumab_, which is Humira's technical name — this allowed me to collect data on variants of Humira's service (e.g. syringe vs. pen injectors) and was more comprehensive than just searching for "Humira." Lastly, since each year's data set had a different endpoint, I collected those in a `tibble` and used `purrr::map_dfr()` to iteratively query and collate the data I wanted. Here's the script I wrote, which should be easily repuruposable for exploring other drug costs:
 
 ```{r eval=FALSE}
 api_endpoints <-
@@ -323,7 +323,7 @@ df_geo <-
 
 Lastly, I wanted to see if the cost varied by geography at all. Surprisingly, there's some fairly significant variation: Delaware has the highest average costs at `r scales::dollar(filter(df_geo, state == "DE")$avg_cost_18)`, whereas in Hawai'i the average cost is only `r scales::dollar(filter(df_geo, state == "HI")$avg_cost_18)`. I'm not sure I needed another reason to not move to Delaware, but duly noted.
 
-Unsurprisingly, though, costs are rising uniformly across the country. And while some states have bumpier adoption curves, the market for Humira is clearly growing as well. With its anti-compettive market protections in place, it looks like Humira will continue to be a top dollar product for Abbvie, who have little incentive to lower costs under current circumstances — a cause for concern for the many thousands of Humira patients who rely on the drug for pain management.
+Unsurprisingly, though, costs are rising uniformly across the country. And while some states have bumpier adoption curves, the market for Humira is clearly growing steadily, as well. With its anti-compettive market protections in place, it looks like Humira will continue to be a top dollar product for Abbvie, who have little incentive to lower costs under current circumstances — a cause for concern for the many thousands of Humira patients who rely on the drug for pain management.
 
 ```{r results='asis'}
 df_geo <-
@@ -393,7 +393,7 @@ df_geo <-
   frameWidget()
 ```
 
-If Abbvie's "patent thicket" strategy continues to prevail (and they've already successfully defended it [in court](https://news.bloomberglaw.com/ip-law/abbvie-dodges-antitrust-challenge-to-its-humira-patent-thicket)), the domestic cost of Humira is likely to keep rising. Like most conditions treated by Humira, my ankylosing spondylitis is chronic, meaning that I'll need to find ways to keep paying for Humira for the foreseeable future or else forgo care. While I'm in a strong position at the moment, it's not hard to imagine the potential constraints I'll face if anything about my current insurance situation changes.
+If Abbvie's "patent thicket" strategy continues to prevail (and they've already successfully defended it [in court](https://news.bloomberglaw.com/ip-law/abbvie-dodges-antitrust-challenge-to-its-humira-patent-thicket)), the domestic cost of Humira is likely to keep rising. Like most conditions treated by Humira, my ankylosing spondylitis is chronic, meaning that I'll need to find ways to keep paying for Humira for the foreseeable future or else forgo care. While I'm in a strong position at the moment, it's not hard to imagine the potential constraints I'll face if anything about my current insurance situation changes: 
 
   + If I switch jobs, I'll need to establish coverage on a new health plan immediately. This summer when I moved to Montana, it took me nearly two months to completely manage the transition to a new provider, insurance plan, and pharmacy, and I had to pause my medication while I sorted everything out. 
 
@@ -401,4 +401,4 @@ If Abbvie's "patent thicket" strategy continues to prevail (and they've already 
 
   + If I were retired today and on Medicare (this is much more of a hypothetical, but bear with me) or needed to enroll in Medicaid, I would be ineligible for Abbvie's co-pay assistance and would likely pay nearly [$5,200 out-of-pocket](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2764813) each year. 
 
-These are personal reasons, but they echo the concerns of the millions of Americans who are navigating a health landscape rife with anti-competitive market practices, skyrocketing out-of-pocket expenses, and tenuous guarantees of care outside the confines of the commercial insurance industry. I don't mean to discount the way Humira has changed my life for the better, but my experience with the drug has been equally colored by an up-close look at America's broken and unjust health system. 
+These are personal reasons, but they echo the concerns of the millions of Americans who are navigating a health landscape rife with anti-competitive market practices, skyrocketing out-of-pocket expenses, and tenuous guarantees of care outside the confines of the commercial insurance industry. I don't mean to discount the way Humira has changed my life for the better, but my experience with the drug has been equally colored by an up-close look at how broken and unjust America's health system can be. 
