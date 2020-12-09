@@ -38,9 +38,9 @@ After some more searching and a lot of tinkering, I figured out how to embed my 
 
 3. To be able to easily navigate to my new dashboard on the local version of my site, I followed [Mara Alexeev's advice here](https://community.rstudio.com/t/host-flexdashboard-on-blogdown-site/76355) and copied the new `.html` file to my `post/` folder. To keep things organized, I copied it into a new subdirectory called `post/libib-dashboard-body/`, and was able to see how it looked by navigating to `[my_local_network]/post/libib-dashboard-body/` on my local preview site. 
 
-4. Note that this post isn't hosted in the same `static/` directory as the `.html` file specifying my dashboard. Instead, this post is rendered from a separate `.md` file in the usual `content/post/` directory. This allowed me to add more `markdown` content and integrate it with the rest of my site using `YAML` options like a title, custom HTML, and a header image.
+4. Note that this post (the one you're reading) isn't hosted in the same `static/` directory as the `.html` file specifying my dashboard. Instead, this post is rendered from a separate `.md` file in the usual `content/post/` directory. This allowed me to add more `markdown` content and integrate it with the rest of my site using `YAML` options like a title, custom HTML, and a header image.
 
-5. To render the dashboard within this post, I simply embedded the new URL in an `<iframe>` tag and added it to the body of the `.md` file. And voilà! This line rendered the dashboard you see above: 
+5. To render the dashboard within this post, I simply embedded the new URL in an `<iframe>` tag and added it to the body of the `.md` file. And voilà! This line is all it took to render the dashboard you see above: 
 
 ```
 <iframe class="flexdashboard" src="https://www.benjaminsorensen.me/post/libib-dashboard-body/" style = "height: 1070px; width: 720px"> </iframe>
@@ -50,8 +50,13 @@ After some more searching and a lot of tinkering, I figured out how to embed my 
 
 While I was very excited to finally see my dashboard embedded in my post, I quickly noticed a few limitations that I still haven't fully resolved. Keep in mind that, at the time of this writing, I've only been fiddling with custom HTML and CSS for a few days, so it's very likely that I'm overlooking easy fixes to the problems described below. So if you have any suggestions or are able to take this concept farther than I was, [I'd love to hear from you!](mailto::bchangsorensen@gmail.com) 
 
-* I haven't figured out how to expand the `<iframe>` tag beyond the default width of the body of my post, which is why my dashboard is so narrow. Ideally, I'd like the dashboard to stretch closer to the far right and left margins of the site, but after toying with some custom stylization I wasn't able to get anywhere. 
+* I haven't figured out how to expand the `<iframe>` tag beyond the default width of the body of my post, which is why my dashboard is so narrow. Ideally, I'd like the dashboard to stretch closer to the far right and left margins of the site, but after toying with some custom stylization I wasn't able to get anywhere. Since I couldn't figure this out I ended up re-designing my dashboard to fit the page.
 
-* The `{.tabset}` option in `flexdashboard` doesn't render properly in `blogdown`. I ended up dropping a few visualizations because I couldn't display them compactly without this feature. 
+* The `{.tabset}` option in `flexdashboard` doesn't seem to render properly in `blogdown`. I ended up dropping a visualization because I couldn't display it compactly without this feature. 
 
 * Step 3 of the approach I'm taking involves copying the `flexdashboard`-rendered `.html` file from my `static/dashboards/` folder into its own `content/post/` folder, and I've had to repeat this step each time I re-rendered the dashboard. This doesn't take long, but it's not ideal and I'm sure it could be streamlined somehow. 
+
+
+### Bonus visualization!
+
+{{< figure src="bonus.png" title="Campaigns are unhealthy for reading habits :sweat_smile:" >}}
