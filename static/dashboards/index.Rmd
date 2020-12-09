@@ -1,0 +1,110 @@
+---
+title: My library, 2019-2020
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, error = FALSE)
+
+library(tidyverse)
+library(flexdashboard)
+library(slickR)
+library(htmlwidgets)
+library(reactable)
+library(rvest)
+library(lubridate)
+
+sysfonts::font_add_google(name = "Inter") 
+showtext::showtext_auto()
+rating_stars <- function(rating, max_rating = 10) {
+  star_icon <- function(empty = FALSE) {
+    htmltools::tagAppendAttributes(
+      shiny::icon("star"),
+      style = paste("color:", if (empty) "#edf0f2" else "orange"),
+      "aria-hidden" = "true"
+    )
+  }
+  stars <- lapply(seq_len(max_rating), function(i) {
+    if (i <= rating) star_icon() else star_icon(empty = TRUE)
+  })
+  label <- sprintf("%s out of %s", rating, max_rating)
+  htmltools::div(title = label, "aria-label" = label, role = "img", stars)
+}
+
+my_library <- read_csv("~/personal-website/content/post/libib-dashboard/data/libib_export.csv")
+my_libib <- read_html("~/personal-website/content/post/libib-dashboard/data/libib_site.html")
+cover_info <- html_nodes(my_libib, "#library_load_inner img") 
+covers <- 
+  tibble(
+    cover_title = cover_info %>% 
+      map_chr(~ html_attr(., "title")),
+    cover_art = cover_info %>% 
+      map_chr(~ html_attr(., "src")) %>% 
+      str_replace(., "^\\.", "~/personal-website/content/post/libib-dashboard/data") 
+  )
+
+df <- 
+  my_library %>% 
+  inner_join(covers, by = c("title" = "cover_title")) %>% 
+  filter(str_detect(cover_art, "\\.jpg$")) %>% 
+  select(title, authors, first_name, last_name, rating, status, completed_date, began_date, pages, cover_art) %>% 
+  mutate(
+    rating = rating * 2,
+    title = if_else(
+      str_detect(title, ", The$"),
+      paste0("The ", str_remove(title, ", The$")),
+      title
+    ),
+    title_author = paste0(title, " (", authors, ")"),
+    resolution = map(cover_art, ~dim(jpeg::readJPEG(.))[1:2])
+  )
+
+top_30 <- 
+  df %>% 
+  filter(map_int(resolution, 1) >= 300) %>% 
+  top_n(n = 30, wt = rating) %>% 
+  sample_n(30)
+```
+
+```{css, echo=FALSE}
+.summary-table {
+  font-family: "Inter", sans-serif;
+  font-size: 14px;
+}
+```
+
+Row
+-------------------------------------
+
+### Top picks
+    
+```{r}
+(slickR(obj = top_30$cover_art) + settings(dots = FALSE, slidesToShow = 1, arrows = FALSE, autoplay = TRUE)) %synch%
+  (slickR(obj = top_30$title, slideType = "p") + settings(dots = TRUE, slidesToShow = 1, autoplay = TRUE)) 
+```
+
+Row
+-------------------------------------
+
+### All reads
+
+```{r}
+df %>% 
+  filter(completed_date >= "2019-01-01") %>% 
+  filter(!is.na(rating)) %>% 
+  select(title, authors, completed_date, pages, rating) %>% 
+  arrange(desc(completed_date)) %>% 
+  reactable(
+    defaultPageSize = 6,
+    columns = list(
+      title = colDef(name = "Title", width = 200, style = list(fontWeight = "bold")),
+      authors = colDef(name = "Author"),
+      completed_date = colDef(name = "Completed"),
+      pages = colDef(name = "Pages"),
+      rating = colDef(name = "Rating", cell = function(value) rating_stars(value), align = "left", width = 200)
+    )
+  )
+```
+
