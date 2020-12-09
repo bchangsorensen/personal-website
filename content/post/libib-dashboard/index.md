@@ -5,7 +5,7 @@ date: '2020-12-09'
 image:
   preview_only: yes
 share: no
-summary: A workaround for hosting `flexdashboard` visualizations on `blogdown` sites using an iframe. 
+summary: A workaround for hosting `flexdashboard` visualizations on `blogdown` sites using an `<iframe>` tag. 
 tags: ["r", "visualization", "flexdashboard", "blogdown"]
 
 authors: 
