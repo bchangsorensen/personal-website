@@ -22,6 +22,10 @@ I'm not the first `blogdown` user to run into this issue, and in my search for a
 
 After some more searching and a lot of tinkering, I figured out how to embed my dashboard, and you can see the results below. Scroll down to learn how it works!
 
+{{% callout note %}}
+The dashboard is best viewed on desktop. :computer:
+{{% /callout %}}
+
 <iframe class="flexdashboard" src="https://www.benjaminsorensen.me/post/libib-dashboard-body/" style = "height: 1070px; width: 720px"> </iframe>
 
 ## How-to
