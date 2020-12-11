@@ -26,6 +26,7 @@ date_format = "Jan 2006"
 #  certificate_url = ""
   date_start = "2014-09-25"
   date_end = "2018-06-15"
-  description = "Honors in Democracy, Development, and the Rule of Law\n Minors in statistics and history"
+  description = "Honors in Democracy, Development, and the Rule of Law.
+  Minors in statistics and history"
 
 +++
