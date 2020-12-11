@@ -21,11 +21,11 @@ date_format = "Jan 2006"
 [[item]]
   organization = "Stanford University"
   organization_url = "https://www.stanford.edu/"
-  title = "B.A. Political Science, with Honors"
+  title = "B.A. Political Science"
   url = ""
 #  certificate_url = ""
   date_start = "2014-09-25"
   date_end = "2018-06-15"
-  description = ""
+  description = "Honors in Democracy, Development, and the Rule of Law\n Minors in statistics and history"
 
 +++
