@@ -6,7 +6,7 @@ title: Benjamin Chang Sorensen
 superuser: true
 
 # Role/position
-role: Seattle, WA • He/Him
+role: Seattle, WA • he/him
 
 # Organizations/Affiliations
 #organizations:

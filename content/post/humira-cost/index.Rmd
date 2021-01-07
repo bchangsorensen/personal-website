@@ -4,7 +4,7 @@ categories: R
 date: '2020-12-07'
 image:
   preview_only: yes
-share: no
+share: false
 summary: Downloading data from the Data.CMS.gov API and exploring the rising costs
   of Humira.
 tags: ["r", "visualization", "socrata", "reactable"]

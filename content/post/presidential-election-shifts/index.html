@@ -15,7 +15,6 @@ share: false
 <script src="{{< relref "post/presidential-election-shifts/index.html" >}}index_files/anchor-sections/anchor-sections.js"></script>
 
 
-<p><em>Originally posted in August, 2019</em></p>
 <p>Back when I was in the <a href="https://dcl-docs.stanford.edu/home/">Data Challenge Lab</a>, some of my favorite assignments involved recreating graphics from <em>The Upshot</em> at the <em>The New York Times.</em> One of their <a href="https://www.nytimes.com/interactive/2016/11/08/us/elections/how-trump-pushed-the-election-map-to-the-right.html">graphics</a> from 2016 artfully compared county-level election results between the last two presidential races. I like this style of electoral map because it draws the viewer's attention to the change taking place on election night, and it indicates which direction the country is headed at a glance.</p>
 <p>Anyway, below is my quick and dirty attempt at recreating <em>The Upshot</em>'s map for 2016. I've also mapped the results of previous presidential elections going back to 2000, and have included some more standard, single-year electoral maps as well, just for comparison's sake. Each plot reflects the margin of victory (or the change in the margin of victory) at the county level, with third party votes excluded.</p>
 <pre class="r"><code>library(tidyverse)

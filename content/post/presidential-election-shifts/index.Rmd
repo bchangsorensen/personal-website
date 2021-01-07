@@ -15,8 +15,6 @@ share: false
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, error = FALSE)
 ```
 
-_Originally posted in August, 2019_
-
 Back when I was in the [Data Challenge Lab](https://dcl-docs.stanford.edu/home/), some of my favorite assignments involved recreating graphics from *The Upshot* at the *The New York Times.* One of their [graphics](https://www.nytimes.com/interactive/2016/11/08/us/elections/how-trump-pushed-the-election-map-to-the-right.html) from 2016 artfully compared county-level election results between the last two presidential races. I like this style of electoral map because it draws the viewer's attention to the change taking place on election night, and it indicates which direction the country is headed at a glance.
 
 Anyway, below is my quick and dirty attempt at recreating *The Upshot*'s map for 2016. I've also mapped the results of previous presidential elections going back to 2000, and have included some more standard, single-year electoral maps as well, just for comparison's sake. Each plot reflects the margin of victory (or the change in the margin of victory) at the county level, with third party votes excluded. 
