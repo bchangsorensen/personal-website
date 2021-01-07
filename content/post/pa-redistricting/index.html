@@ -20,18 +20,17 @@ authors:
 <img src="featured.png" alt="Elkanah Tisdale (1771-1835) (often falsely attributed to Gilbert Stuart) / Public domain" />
 <p class="caption">Elkanah Tisdale (1771-1835) (often falsely attributed to Gilbert Stuart) / Public domain</p>
 </div>
-<p>Pennsylvania's Congressional district map has been a source of contention between Republicans and Democrats for years.</p>
-<p>In 2004, members of the Democratic Party challenged the Republican-drawn district map on the grounds that it violated the principle of one-man, one-vote and thus denied Democratic voters representation in Congress. The case was brought to the Supreme Court as <a href="https://www.oyez.org/cases/2003/02-1580"><em>Vieth v. Jubelirer</em></a>, but the issue was found nonjusticiable and the map was allowed to stand. In his opinion, Justice Kennedy noted that while no judicial standard for assessing the partisanship of a given map yet existed, the Court should remain open to the possibility that one might emerge in the coming years.</p>
-<p>In 2011, again in control of state government, Pennsylvania Republicans implemented a new gerrymander which further solidified their advantage in Congress. The map helped protect Republican candidates in 2012, 2014, and 2016, but was struck down in early 2018 by the state Supreme Court on the grounds that it was &quot;clearly, plainly, and palpably&quot; in violation of the state constitution. A new non-partisan map, drawn by the court with the help of Stanford Law professor Nathaniel Persily, was implemented in time for the May 15th state primaries and will remain in effect until the decennial redistricting following the 2020 census.</p>
+<p>Pennsylvania's Congressional district map has been a source of contention between Republicans and Democrats for years. In 2004, members of the Democratic Party challenged the Republican-drawn district map on the grounds that it violated the principle of one-man, one-vote and thus denied Democratic voters representation in Congress. The case was brought to the Supreme Court as <a href="https://www.oyez.org/cases/2003/02-1580"><em>Vieth v. Jubelirer</em></a>, but the issue was found nonjusticiable and the map was allowed to stand. In his opinion, Justice Kennedy noted that while no judicial standard for assessing the partisanship of a given map yet existed, the Court should remain open to the possibility that one might emerge in the coming years.</p>
+<p>In 2011, again in control of state government, Pennsylvania Republicans implemented a new gerrymander which further solidified their advantage in Congress. The map helped protect Republican candidates in 2012, 2014, and 2016, but was struck down in early 2018 by the state Supreme Court on the grounds that it was &quot;clearly, plainly, and palpably&quot; in violation of the state constitution. A new non-partisan map, drawn by the court with the help of Stanford Law professor Nathaniel Persily, was implemented in time for the May 15th, 2018 state primaries and will remain in effect until the decennial redistricting following the 2020 census. In this post I'll use recent electoral data from Pennsylvania to explore the partisan effects of redistricting on representation.</p>
 <div id="labelling-precincts-with-the-correct-congressional-districts" class="section level2">
 <h2>Labelling precincts with the correct Congressional districts</h2>
-<p>I downloaded election data from <a href="https://github.com/nvkelso/election-geodata/tree/migurski/add-pa-2016/data/42-pennsylvania/statewide">Nathaniel Kelso and Michal Migurski's GitHub repo</a>. We're going to focus on the 2016 election results from Pennsylvania.</p>
-<p>Here are the maps involved in the latest suit:</p>
+<p>I downloaded election data from <a href="https://github.com/nvkelso/election-geodata/tree/migurski/add-pa-2016/data/42-pennsylvania/statewide">Nathaniel Kelso and Michal Migurski's GitHub repo</a> and will focus on the 2016 election results from Pennsylvania.</p>
+<p>Here are the maps that were involved in the latest suit:</p>
 <ul>
 <li><p>The 2011 Republican gerrymander, available from the <a href="https://www.census.gov/geo/maps-data/data/cbf/cbf_cds.html">U.S. Census Bureau</a>.</p></li>
 <li><p>The remedial plan, available from the website of the plaintiffs, <a href="http://www.pacourts.us/news-and-statistics/cases-of-public-interest/league-of-women-voters-et-al-v-the-commonwealth-of-pennsylvania-et-al-159-mm-2017">The League of Women Voters</a>.</p></li>
 </ul>
-<p>To start things off, we'll just focus on the gerrymandered map. Let's begin by cleaning the data.</p>
+<p>To start things off, I'll just focus on the gerrymandered map. Let's begin by cleaning the data.</p>
 <pre class="r"><code># Precinct-level election data from 2016
 penn &lt;- 
   st_read(file_penn) %&gt;% 
@@ -60,8 +59,7 @@ dist_115 &lt;-
 ## dimension:      XY
 ## bbox:           xmin: -179.1489 ymin: -14.5487 xmax: 179.7785 ymax: 71.36516
 ## CRS:            4269</code></pre>
-<p>The <code>penn</code> object contains precinct-level election and census data which is organized by county, but not district. The <code>dist_115</code> file contains geographic information about the district. Both contain <code>geometry</code> objects which allow them to be mapped with the <code>sf</code> package.</p>
-<p>Using just the <code>geometry</code> data for the precincts and the districts, we can use the <code>sf</code> package to generate a tibble that contains a unique guess for each precinct's district. We do this by using <code>st_intersection()</code> to create new geometries that represent each precinct's intersection with one or more of the congressional district shapes, and then selecting the district that produces the greatest overlap, measured by <code>st_area()</code>.</p>
+<p>The <code>penn</code> object contains precinct-level election and census data which is organized by county, but not district. The <code>dist_115</code> file contains geographic information about the district. With just the <code>geometry</code> data for the precincts and the districts, I can use the <code>sf</code> package to generate a tibble containing a unique best guess for each precinct's assigned congressional district. I handle this by using <code>st_intersection()</code> to create new geometries that represent each precinct's intersection with one or more of the congressional district shapes, and then selecting the district that produces the greatest overlap, measured by <code>st_area()</code>.</p>
 <pre class="r"><code>penn_115 &lt;-
   st_intersection(dist_115, penn) %&gt;%
   as_tibble() %&gt;%
@@ -73,7 +71,7 @@ dist_115 &lt;-
   ungroup() %&gt;% 
   select(precinct, cd, everything(), -area) %&gt;% 
   st_as_sf() </code></pre>
-<p>Here's what the map looks like -- each Congressional District now consists of several constituent precinct shapes.</p>
+<p>Here's what the map looks like — each Congressional District now consists of several constituent precinct shapes.</p>
 <pre class="r"><code># Results
 penn_115 %&gt;% 
   ggplot() + 
@@ -85,7 +83,7 @@ penn_115 %&gt;%
 </div>
 <div id="comparing-election-results-under-different-district-maps" class="section level2">
 <h2>Comparing election results under different district maps</h2>
-<p>Now that we've labelled each precinct with its correct district, we can use the voting data from 2016 to compile election results by district.</p>
+<p>Now that I've developed a method to assign each precinct to its congressional district, I can use the voting data from 2016 to compile election results in each district.</p>
 <pre class="r"><code>penn_115 %&gt;% 
   group_by(cd) %&gt;% 
   summarise(
@@ -233,7 +231,7 @@ penn_115 %&gt;%
 </tr>
 </tbody>
 </table>
-<p>Now let's do the same for the remedial map. We'll use the presidential vote totals because otherwise the voting dynamics imposed by the old map will skew the projected results. In PA-18, for instance, former GOP Rep. Tim Murphy ran unopposed in 2016 (before resigning in disgrace in 2017), so we'll substitute Clinton's votes to stand in for a Democratic opponent in those precincts.</p>
+<p>Now let's do the same for the remedial map. I'm using the presidential vote totals because otherwise the voting dynamics imposed by the old map will skew the projected results. In PA-18, for instance, former GOP Rep. Tim Murphy ran unopposed in 2016 (before resigning in disgrace in 2017), so we'll substitute Clinton's vote share against Trump to stand in for a Democratic opponent in those precincts.</p>
 <pre class="r"><code># Read in remedial shapefile
 dist_remedial &lt;- 
   st_read(file_remedial) %&gt;% 
@@ -407,15 +405,15 @@ penn_remedial %&gt;%
 </tr>
 </tbody>
 </table>
-<p>Using the presidential election data and the remedial plan, the Democrats would have carried eight seats, two more than they did under the old plan. However we should note that the gain we've modeled assumes that the races are being decided by the 2016 presidential electorate along party lines, when in reality... it's more complicated than that. We could probably pick a more representative set of results to model, but still, the effect is clear. And the districts look much better, too!</p>
+<p>Using the presidential election data and the remedial plan, the Democrats would have carried eight seats, two more than they did under the old plan. However I should note that the gain I've modeled assumes that the races are being decided by the 2016 presidential electorate along party lines, when in reality... it's more complicated than that. I could probably pick a more representative set of results to model, but still, the effect is clear. And the districts look much better, too!</p>
 </div>
 <div id="measuring-a-maps-partisanship" class="section level2">
 <h2>Measuring a map's partisanship</h2>
-<p>Let's see if we can answer Justice Kennedy's question: How can a court objectively determine whether a map is the result of a partisan gerrymander?</p>
-<p>In the years since <em>Vieth v. Jubelirer</em>, political scientists have come up with various statistical approaches to assess the partisanship of maps. With our tools, we can replicate some of their findings. We'll borrow from two of the most promising approaches developed by political scientists in the past few years.</p>
+<p>Let's return to Justice Kennedy's question: How can a court objectively determine whether a map is the result of a partisan gerrymander?</p>
+<p>In the years since <em>Vieth v. Jubelirer</em>, political scientists have come up with various statistical approaches to assess the observed partisanship of maps. With the methods above, I figure I can replicate some of their findings. I'll borrow from two of the most promising approaches developed by political scientists in the past few years.</p>
 <ul>
 <li><p><strong>The efficiency gap</strong>, devised by Nicholas Stephanopoulos and Eric McGhee, is a simple measure of how many votes each party &quot;wasted&quot; in a given election. A competitive, non-partisan map should theoretically have an efficiency gap close to zero. To calculate the estimated efficiency gap, I'm referncing this primer published by <a href="https://www.brennancenter.org/sites/default/files/legal-work/How_the_Efficiency_Gap_Standard_Works.pdf">The Brennan Center</a>.</p></li>
-<li><p><strong>Simulated district maps</strong>, pioneered by Jowei Chen and David Cottrell, are used as non-partisan counterfactuals by which we can objectively measure partisan bias in existing maps. The simulations are constructed in order to be geographically compact, contiguous, and equally apportioned according to population and election data -- factors which should inform the creation of non-partisan maps in real life. You can find hundreds of simulated maps on <a href="http://www-personal.umich.edu/~jowei/gerrymandering/">Chen's personal website</a>, however I'll just select one for illustrative purposes.</p></li>
+<li><p><strong>Simulated district maps</strong>, pioneered by Jowei Chen and David Cottrell, are used as non-partisan counterfactuals by which we can objectively measure partisan bias in existing maps. The simulations are constructed in order to be geographically compact, contiguous, and equally apportioned according to population and election data — factors which should inform the creation of non-partisan maps in real life. You can find hundreds of simulated maps on <a href="http://www-personal.umich.edu/~jowei/gerrymandering/">Chen's personal website</a>, however I'll just select one for illustrative purposes.</p></li>
 </ul>
 <pre class="r"><code>### Gerrymandered efficiency gap
 efficiency_gap &lt;- function(d) {
@@ -522,6 +520,6 @@ efficiency_gap(penn_remedial)</code></pre>
 </tr>
 </tbody>
 </table>
-<p>The simulated map results in an efficiency gap of 6.6%, or a ~1.2 seat advantage, also in favor of the Republicans. As it turns out, surprisingly few of the simulated maps from Chen and Cottrell's study result in a Democratic advantage -- it's difficult to draw maps that favor Democrats due to the tendency of Democratic voters to cluster in densely populated and geographically confined urban areas. Along with Jonathan Rodden (from Stanford's political science department), <a href="https://www.nytimes.com/2014/01/26/opinion/sunday/its-the-geography-stupid.html">Chen has used these simulations</a> to argue that the Democrats' biggest problem is not partisan gerrymandering by Republicans, but the natural human geography of their voting base.</p>
-<p>This does nothing to excuse the unnatural advantages of partisan gerrymandering, of course, and as we've seen (and has been proven in court), the Pennsylvania Republican party's map represented a blatant -- and effective -- power grab. In Congress, every voting member's voice counts equally, no matter where they live. In other words, every vote <em>counts</em>. We should be able to say the same for Pennsylvania's voters.</p>
+<p>The simulated map results in an efficiency gap of 6.6%, or a ~1.2 seat advantage, also in favor of the Republicans. As it turns out, surprisingly few of the simulated maps from Chen and Cottrell's study result in a Democratic advantage — it's difficult to draw maps that favor Democrats due to the tendency of Democratic voters to cluster in densely populated and geographically confined urban areas. Along with political scientist Jonathan Rodden, <a href="https://www.nytimes.com/2014/01/26/opinion/sunday/its-the-geography-stupid.html">Chen has used these simulations</a> to argue that the Democrats' biggest problem is not partisan gerrymandering by Republicans, but the natural human geography of their voting base.</p>
+<p>This does nothing to excuse the unnatural advantages of partisan gerrymandering, of course, and as we've seen (and has been proven in court), the Pennsylvania Republican party's map represented a blatant — and effective — power grab. In Congress, every voting member's voice counts equally, no matter where they live. In other words, every vote <em>counts</em>. We should be able to say the same for Pennsylvania's voters.</p>
 </div>
