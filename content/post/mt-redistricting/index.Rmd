@@ -1,6 +1,6 @@
 ---
 title: "Exploring the possibilities of a second congressional district in Montana"
-categories: R
+categories: R, GIS
 date: '2021-01-13'
 image:
   preview_only: yes
@@ -200,7 +200,7 @@ initcds <-
 
 Bringing it all together, I can now implement the sampling method by feeding my inputs into the `redist::redist.mcmc()` function. After tinkering with the constraint parameters, I've decided to place equal weight on the population and compactness constraints. The result is 2,000 simulations of viable redistricting plans, half of which follow a roughly North-South dividing line and half of which follow a roughly East-West dividing line. The color scale, chosen in honor of MSU (Go Cats!), represents how likely a block group is to end up in either district across all of the simulated plans. 
 
-```{r echo=FALSE}
+```{r}
 set.seed(59601)
 
 ## North-South dividing line
@@ -214,10 +214,9 @@ alg_mcmc_ns <- redist.mcmc(
   popcons = .01,
   ssdmat = distmat,
   savename = "data/redist.mcmc"
-)
-```
+) %>% 
+  invisible()
 
-```{r}
 alg_mcmc_ns$partitions %>%
   as_tibble() %>%
   mutate(row_n = row_number()) %>%
@@ -237,7 +236,7 @@ alg_mcmc_ns$partitions %>%
   )
 ```
 
-```{r echo=FALSE}
+```{r}
 ## East-West dividing line
 alg_mcmc_ew <- redist.mcmc(
   adjobj = adjlist,
@@ -249,10 +248,9 @@ alg_mcmc_ew <- redist.mcmc(
   popcons = .01,
   ssdmat = distmat,
   savename = "data/redist.mcmc"
-)
-```
+) %>% 
+  invisible()
 
-```{r}
 alg_mcmc_ew$partitions %>%
   as_tibble() %>%
   mutate(row_n = row_number()) %>%

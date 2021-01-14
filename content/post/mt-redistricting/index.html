@@ -1,6 +1,6 @@
 ---
 title: "Exploring the possibilities of a second congressional district in Montana"
-categories: R
+categories: R, GIS
 date: '2021-01-13'
 image:
   preview_only: yes
@@ -158,6 +158,21 @@ seq(from = 44.66, to = 48.93, by = .01) %&gt;%
 <div id="using-markov-chain-monte-carlo-to-sample-hypothetical-districts" class="section level3">
 <h3>Using Markov Chain Monte Carlo to sample hypothetical districts</h3>
 <p>Bringing it all together, I can now implement the sampling method by feeding my inputs into the <code>redist::redist.mcmc()</code> function. After tinkering with the constraint parameters, I've decided to place equal weight on the population and compactness constraints. The result is 2,000 simulations of viable redistricting plans, half of which follow a roughly North-South dividing line and half of which follow a roughly East-West dividing line. The color scale, chosen in honor of MSU (Go Cats!), represents how likely a block group is to end up in either district across all of the simulated plans.</p>
+<pre class="r"><code>set.seed(59601)
+
+## North-South dividing line
+alg_mcmc_ns &lt;- redist.mcmc(
+  adjobj = adjlist,
+  popvec = bg$pop_est,
+  initcds = initcds$cd_ns,
+  nsims = 1000,
+  constraint = c(&quot;population&quot;, &quot;compact&quot;),
+  constraintweights = c(1, 1),
+  popcons = .01,
+  ssdmat = distmat,
+  savename = &quot;data/redist.mcmc&quot;
+) %&gt;% 
+  invisible()</code></pre>
 <pre><code>## 
 ## ==================== 
 ## redist.mcmc(): Automated Redistricting Simulation Using
@@ -211,7 +226,20 @@ seq(from = 44.66, to = 48.93, by = .01) %&gt;%
     title = &quot;Hypothetical districts using a North-South dividing line&quot;,
     fill = &quot;Assignment\nprobability&quot;
   )</code></pre>
-<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>## East-West dividing line
+alg_mcmc_ew &lt;- redist.mcmc(
+  adjobj = adjlist,
+  popvec = bg$pop_est,
+  initcds = initcds$cd_ew,
+  nsims = 1000,
+  constraint = c(&quot;population&quot;, &quot;compact&quot;),
+  constraintweights = c(2, 1),
+  popcons = .01,
+  ssdmat = distmat,
+  savename = &quot;data/redist.mcmc&quot;
+) %&gt;% 
+  invisible()</code></pre>
 <pre><code>## 
 ## ==================== 
 ## redist.mcmc(): Automated Redistricting Simulation Using
@@ -265,7 +293,7 @@ seq(from = 44.66, to = 48.93, by = .01) %&gt;%
     title = &quot;Hypothetical districts using an East-West dividing line&quot;,
     fill = &quot;Assignment\nprobability&quot;
   )</code></pre>
-<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>It looks like the East-West dividing line is a lot &quot;fuzzier&quot; than the North-South line. While this is emphasized by the fact that the East-West line has to cut through geographically larger block groups in Eastern Montana, the distribution of district assignments generated from the North-South line is in fact more polarized. In other words, the algorithm didn't deviate from the original proposal very much at all when cutting North to South, suggesting a narrower distribution of possibilities that meet the stated constraints.</p>
 </div>
 </div>
@@ -301,7 +329,7 @@ seq(from = 44.66, to = 48.93, by = .01) %&gt;%
   geom_sf(data = sen_results, size = .25, fill = NA, color = &quot;blue&quot;) + 
   coord_sf(datum = NA) + 
   theme_void()</code></pre>
-<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>To select a &quot;final&quot; district map from both sets of possible plans, I'm splitting the block groups at 50% of the district assignment probability observed in the sample. By overlaying these final shapes with the precinct map, I'm finally able to split the election data up using the hypothetical districts.</p>
 <pre class="r"><code>ns_districts &lt;- 
   alg_mcmc_ns$partitions %&gt;% 
@@ -412,7 +440,7 @@ sen_results %&gt;%
     fill = &quot;Projected margin&quot;,
     caption = &quot;Estimates based on 2020 U.S. Senate precinct-level vote totals&quot;
   )</code></pre>
-<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <pre class="r"><code>sen_results %&gt;% 
   inner_join(ew_precincts, by = c(&quot;precinct_name&quot;, &quot;county&quot;)) %&gt;% 
   st_set_geometry(value = NULL) %&gt;% 
@@ -443,7 +471,7 @@ sen_results %&gt;%
     fill = &quot;Projected margin&quot;,
     caption = &quot;Estimates based on 2020 U.S. Senate precinct-level vote totals&quot;
   )</code></pre>
-<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<p><img src="{{< relref "post/mt-redistricting/index.html" >}}index_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
 <p>Obviously, things aren't looking too pretty for Democrats in Montana right now. We put forward a terrific slate of candidates and a strong campaign in 2020, but came up far short of where we needed to be. But I have faith that the party will carve out new paths to victory and be back to winning elections sometime soon. And the good news is that redistricting is likely to work in their favor, especially if the commission uses a North-South dividing line to create eastern and western districts.</p>
 <p>A western district would encompass high-growth counties like Missoula and Flathead, and if Democrats can stay competitive in Lewis &amp; Clark while maintaining a foothold in Butte, they'll have a chance to make the inaugural race under a new, two-district map very competitive. The shame would be that votes from Bozeman, which is probably the Democrats fastest growing stronghold, would be subsumed by the heavily conservative precincts in Eastern Montana. A preferable map would carve out more of the Western district to include Bozeman at the expense of Great Falls and East Helena, though I haven't run the numbers on the population split and this would be harder to defend as politically neutral.</p>
 <p>An East-West split, creating a northern district and a southern District, would be less advantageous. But this plan seems less likely to me — at a gut-level the map looks harder to justify, especially since the cultural divide in Montana is between the East and the West, and the two sides of the state would have fairly distinct preferences on a number of issues.</p>
