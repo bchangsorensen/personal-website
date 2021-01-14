@@ -1,0 +1,482 @@
+---
+title: "Exploring the possibilities of a second congressional district in Montana"
+categories: R
+date: '2021-01-13'
+image:
+  preview_only: yes
+share: false
+summary: Generating hypothetical redistricting plans using the `redist` package. 
+tags: ["r", "gis", "politics", "redistricting"]
+
+authors: 
+- admin
+---
+
+With the upcoming release of 2020 Census figures, Montanans will soon know whether or not they'll be sending a second representative to Congress in 2022. Montana has been represented by a single member representing an at-large district since 1992, when population growth in other parts of the country forced the consolidation of the state's first and second districts. But booming population growth in the Western half of the state, led by an estimated [25% 10-year increase in Gallatin County](https://www.mtpr.org/post/census-numbers-show-big-growth-western-montana) (home to Bozeman, or "Boze-Angeles" to a certain set of sneering locals), has Montana poised to double its House delegation in time for the next midterm cycle. 
+
+Could a new Congressional seat be competitive for Democrats? It may depend on how the map is drawn. As detailed [in a previous post](/post/pa-redistricting/), we can say a lot about the political implications of different redistricting plans using methods devised by political scientists. But without a set of hypothetical maps to draw from, I'll have to create some myself. Thankfully, this is made relatively simple by the `redist` package, which can be used to apply a Markov chain Monte Carlo sampling method to simulate thousands of potential district maps for us to choose from. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, error = FALSE)
+```
+
+## Loading packages
+
+```{r}
+library(tidyverse)
+library(sf)
+library(tidycensus)
+library(redist)
+```
+
+The `tidycensus` package offers a convenient way to download data from the Census Bureau (once you've registered for an API key [here](http://api.census.gov/data/key_signup.html)), and we'll use it to query the population data that will inform our map-making. The `redist` package offers a suite of statistical tools for generating realistic redistricting plans. The theory behind the package's MCMC approach is [laid out here](https://imai.fas.harvard.edu/research/redist.html), in a paper by Fifield, Higgins, Imai, and Tarr.
+
+## Gathering data
+
+The following code queries population estimates for each block group in Montana from the 2018 American Community Survey. 
+
+```{r eval=FALSE}
+census_api_key(Sys.getenv("CENSUS_API_KEY"))
+
+acs <-
+  get_acs(
+    geography = "block group",
+    state = "MT",
+    year = 2018,
+    variables = "B01003_001"
+  )
+```
+
+```{r include=FALSE}
+# write_rds(acs, "~/Desktop/mt_acs18_bg_pop.rds")
+acs <- read_rds("data/mt_acs18_bg_pop.rds")
+```
+
+I joined the population estimates to a data frame of `sf` geometries representing each block group, which I downloaded from [the Census Bureau's TIGER data source](https://catalog.data.gov/dataset/tiger-line-shapefile-2018-state-montana-current-block-group-state-based).
+
+```{r}
+bg <- 
+  read_sf("data/tl_2018_30_bg/tl_2018_30_bg.shp") %>% 
+  st_transform(crs = 4326) %>% 
+  rename_all(str_to_lower) %>% 
+  select(county = countyfp, geoid, geometry) %>% 
+  left_join(acs %>% select(GEOID, pop_est = estimate), by = c("geoid" = "GEOID")) %>% 
+  mutate(row_n = row_number())
+```
+
+Here's what we're working with: 
+
+```{r}
+bg %>% 
+  ggplot(aes(fill = pop_est)) + 
+  geom_sf(size = 0, show.legend = FALSE) + 
+  scale_fill_viridis_c(option = "magma") + 
+  coord_sf(datum = NA) +
+  theme_void() + 
+  labs(title = "Population map of Montana, by block group", caption = "2018 ACS estimates")
+```
+
+## Preparing `redist` inputs
+
+The `redist::redist.mcmc()` function takes a set of data describing the input map (in this case, the set of block groups) along with a set of parameters that enforce certain constraints common to redistricting decisions. In Montana, the bipartisan redistricting commission must adhere to a set of relatively strict guidelines when creating new districts, summarized here:
+
+* Districts must have roughly equal populations, with a maximum tolerable deviation of 1%
+
+* Districts must be contiguous, and diagonal contiguity is not permitted
+
+* Districts must be compact ("a district may not have an average length greater than three times the average width")
+
+* The number of split counties and cities must be limited as much as possible
+
+* Political data may not be used in the map-making process
+
+You can learn more about the process from [this talk by the Brennan Center's Peter Miller](https://www.brennancenter.org/events/could-montana-gain-second-congressional-seat-redistricting-after-2020-census), hosted by the Montana League of Women Voters. 
+
+My goal is to tweak the `redist` function to produce a set of maps that meet this criteria, using only Census data. 
+
+### Adjacency list
+
+To properly simulate contiguous district maps, the algorithm needs to know which block groups are adjacent to each other. The `spdep::poly2nb()` function produces a list of "neighbors" for each inputted polygon. By setting the option `queen = FALSE`, the function enforces rook contiguity, meaning diagonal adjacencies aren't permitted, just as Montana's redistricting code requires. 
+
+```{r}
+adjlist <- spdep::poly2nb(bg, queen = FALSE)
+```
+
+### Distance matrix
+
+To enforce compactness, the algorithm requires information about how the block groups are distributed in space. This can be accomplished with a distance matrix. Note that computation speeds for `st_distance()` are drastically improved by using centroids rather than polygons. 
+
+```{r}
+distmat <- 
+  bg %>% 
+  mutate(centroid = st_centroid(geometry)) %>% 
+  st_set_geometry(value = "centroid") %>% 
+  select(-geometry) %>% 
+  st_distance()
+```
+
+### Initial districts
+
+Montana's new districts will need to meet a "compactness" standard as well, but the standard described in the state code seems vague. If a district were mostly compact, but jutted out across the length of the state at one point, would it meet the 3:1 length to width standard? Depending on how you calculated it, maybe, but such a map probably wouldn't pass the sniff test in any case. Since the transition from an at-large to two-district map requires just one dividing line to be drawn, it seems reasonable to assume the result will be fairly tame looking by redistricting standards.
+
+So, to simplify things, I'm going to use two arbitrary divisions to seed the algorithm: one divided along a  North-South line, and one divided along an East-West line. This is possible because the `redist` algorithm can accept an initial set of district assignments to generate new samples from. To create these initial districts, I'm going to split the state into two halves on either side of an arbitrary longitude or latitude value, and then see if this gets me to a set of candidate districts with the desired population parity. 
+
+```{r}
+## Calculate centroids for each block group
+bg_points <- 
+  bg %>% 
+  mutate(
+    centroid = st_centroid(geometry), 
+    lon = map_dbl(centroid, 1), 
+    lat = map_dbl(centroid, 2)
+  ) %>% 
+  select(-centroid) %>% 
+  st_set_geometry(value = NULL)
+
+## Given either a longitude or latitute cut point, return the population difference 
+## of the resulting split
+find_pop_diff <- function(lon_lat, cut_point) { 
+  if (lon_lat == "lon") {
+    d1 <- sum(bg_points$pop_est[which(bg_points$lon <= cut_point)])
+    d2 <- sum(bg_points$pop_est[which(bg_points$lon > cut_point)])
+  }
+  if (lon_lat == "lat") { 
+    d1 <- sum(bg_points$pop_est[which(bg_points$lat <= cut_point)])
+    d2 <- sum(bg_points$pop_est[which(bg_points$lat > cut_point)])
+  }
+  abs(d1 - d2) / (d1 + d2)
+}
+
+```
+
+Using a grid search across .01 degree increments, I find that there are in fact a few cut points that I can use as decent starting points. By seeding the algorithm with these districts, I'm making it more likely that I'll be able to successfully sample from a distribution of realistic and in-criteria maps.  
+
+```{r}
+# North-South splits
+seq(from = -115.9, to = -104.1, by = .01) %>% 
+  map_dfr(~tibble(cut_point = ., pop_diff = find_pop_diff("lon", .))) %>% 
+  mutate(`Pop. Parity` = pop_diff <= .01) %>% 
+  ggplot(aes(cut_point, pop_diff, color = `Pop. Parity`)) + 
+  geom_point(size = .5) + 
+  scale_color_manual(values = c("black", "red")) + 
+  labs(
+    y = "% Pop. Difference",
+    x = "Longitude cut point"
+  )
+
+# East-West splits
+seq(from = 44.66, to = 48.93, by = .01) %>% 
+  map_dfr(~tibble(cut_point = ., pop_diff = find_pop_diff("lat", .))) %>% 
+  mutate(`Pop. Parity` = pop_diff <= .01) %>% 
+  ggplot(aes(cut_point, pop_diff, color = `Pop. Parity`)) + 
+  geom_point(size = .5) + 
+  scale_color_manual(values = c("black", "red")) + 
+  labs(
+    y = "% Pop. Difference",
+    x = "Latitude cut point"
+  )
+
+bg %>% 
+  ggplot() + 
+  geom_sf(size = .1) + 
+  geom_hline(yintercept = 46.62, color = "red") + 
+  geom_vline(xintercept = -111.37, color = "blue") + 
+  coord_sf(datum = NA) + 
+  theme_void() + 
+  labs(title = "Approximate North-South and East-West cut points for seed districts")
+
+initcds <-  
+  bg %>% 
+  mutate(
+    centroid = st_centroid(geometry), 
+    lon = map_dbl(centroid, 1), 
+    lat = map_dbl(centroid, 2),
+    cd_ns = if_else(lon <= -111.37, 0, 1),
+    cd_ew = if_else(lat <= 46.62, 0, 1)
+  )
+```
+
+### Using Markov Chain Monte Carlo to sample hypothetical districts
+
+Bringing it all together, I can now implement the sampling method by feeding my inputs into the `redist::redist.mcmc()` function. After tinkering with the constraint parameters, I've decided to place equal weight on the population and compactness constraints. The result is 2,000 simulations of viable redistricting plans, half of which follow a roughly North-South dividing line and half of which follow a roughly East-West dividing line. The color scale, chosen in honor of MSU (Go Cats!), represents how likely a block group is to end up in either district across all of the simulated plans. 
+
+```{r echo=FALSE}
+set.seed(59601)
+
+## North-South dividing line
+alg_mcmc_ns <- redist.mcmc(
+  adjobj = adjlist,
+  popvec = bg$pop_est,
+  initcds = initcds$cd_ns,
+  nsims = 1000,
+  constraint = c("population", "compact"),
+  constraintweights = c(1, 1),
+  popcons = .01,
+  ssdmat = distmat,
+  savename = "data/redist.mcmc"
+)
+```
+
+```{r}
+alg_mcmc_ns$partitions %>%
+  as_tibble() %>%
+  mutate(row_n = row_number()) %>%
+  rowwise() %>%
+  mutate(p_cd = mean(c_across(V1:V1000))) %>%
+  nest(cols = starts_with("V")) %>%
+  inner_join(bg, by = "row_n") %>%
+  st_as_sf() %>%
+  ggplot(aes(fill = p_cd)) +
+  geom_sf(size = 0) +
+  scale_fill_gradient2(low = "#b99458", high = "#1a2857", midpoint = .5) +
+  coord_sf(datum = NA) +
+  theme_void() + 
+  labs(
+    title = "Hypothetical districts using a North-South dividing line",
+    fill = "Assignment\nprobability"
+  )
+```
+
+```{r echo=FALSE}
+## East-West dividing line
+alg_mcmc_ew <- redist.mcmc(
+  adjobj = adjlist,
+  popvec = bg$pop_est,
+  initcds = initcds$cd_ew,
+  nsims = 1000,
+  constraint = c("population", "compact"),
+  constraintweights = c(2, 1),
+  popcons = .01,
+  ssdmat = distmat,
+  savename = "data/redist.mcmc"
+)
+```
+
+```{r}
+alg_mcmc_ew$partitions %>%
+  as_tibble() %>%
+  mutate(row_n = row_number()) %>%
+  rowwise() %>%
+  mutate(p_cd = mean(c_across(V1:V1000))) %>%
+  nest(cols = starts_with("V")) %>%
+  inner_join(bg, by = "row_n") %>%
+  st_as_sf() %>%
+  ggplot(aes(fill = p_cd)) +
+  geom_sf(size = 0) +
+  scale_fill_gradient2(low = "#b99458", high = "#1a2857", midpoint = .5) +
+  coord_sf(datum = NA) +
+  theme_void() + 
+  labs(
+    title = "Hypothetical districts using an East-West dividing line",
+    fill = "Assignment\nprobability"
+  )
+```
+
+It looks like the East-West dividing line is a lot "fuzzier" than the North-South line. While this is emphasized by the fact that the East-West line has to cut through geographically larger block groups in Eastern Montana, the distribution of district assignments generated from the North-South line is in fact more polarized. In other words, the algorithm didn't deviate from the original proposal very much at all when cutting North to South, suggesting a narrower distribution of possibilities that meet the stated constraints. 
+
+## Political implications
+
+We now have two sets of proposed districts that meet Montana's redistricting requirements. In the spirit of replicating the redistricting commission's mandate, we did so without regard for political advantage and without using political data. But all maps have strong political implications, and thanks to some precinct-level election data I scrounged up from my time in Montana, I'm able to speculate about what the effect might be.
+
+{{% callout note %}}
+
+Since I'm not on the redistricting commission, I'll just come out and say that I'd very much prefer to see a map where Montana Democrats have a fighting chance to send another progressive to Washington. I've got my personal biases ([shocker!](/about_me/)), but I also just feel really bad for Jon Tester, who has to sit in the same room as Steve Daines and Matt Rosendale during delegation meetings. He could use a buddy, and Montanans deserve better. 
+
+{{% /callout %}}
+
+To incorporate election data into my analysis, I need to translate my hypothetical district assignments to [individual precincts](https://ftpgeoinfo.msl.mt.gov/Data/Spatial/MSDI/AdministrativeBoundaries/). Since my districts are built from block groups (which are generally smaller than precincts), I should be able to approximate the correct assignments by simply overlaying my two districts onto a precinct map, and then assigning precincts based on the resulting overlap. So if Precinct A is 90% in the first district and 10% in the second district, it'll get assigned to the first. The downside to this approach is that we may lose our hard-fought 1% population parity in the shuffle, but any difference should be slight. 
+
+```{r}
+sen_results <- 
+  read_csv("data/[mtcc] ENight Scraper Results  - Raw.csv") %>% 
+  select(
+    precinct_name = sos_precinct_name,
+    county = county_name,
+    race_name,
+    democrat,
+    republican
+  ) %>% 
+  filter(race_name == "UNITED STATES SENATOR", precinct_name != "TOTALS") %>% 
+  select(-race_name) %>% 
+  left_join(
+    read_sf("data/MontanaVotingPrecincts_shp/VotingPrecincts.shp") %>% 
+      rename_all(str_to_lower) %>% 
+      select(precinct_name = name, county, geometry) %>% 
+      st_transform(crs = 4326),
+    by = c("precinct_name", "county")
+  ) %>% 
+  st_as_sf()
+```
+
+Here's a look at the what the intersection between block groups (red) and precincts (blue) looks like, for reference.  
+
+```{r}
+ggplot() + 
+  geom_sf(data = bg, size = .25, fill = NA, color = "red") + 
+  geom_sf(data = sen_results, size = .25, fill = NA, color = "blue") + 
+  coord_sf(datum = NA) + 
+  theme_void()
+```
+
+To select a "final" district map from both sets of possible plans, I'm splitting the block groups at 50% of the district assignment probability observed in the sample. By overlaying these final shapes with the precinct map, I'm finally able to split the election data up using the hypothetical districts. 
+
+```{r}
+ns_districts <- 
+  alg_mcmc_ns$partitions %>% 
+  as_tibble() %>%
+  mutate(row_n = row_number()) %>%
+  rowwise() %>%
+  transmute(
+    row_n,
+    p_cd = mean(c_across(V1:V1000)),
+    cd = if_else(p_cd > .5, "D1", "D2")
+  ) %>%
+  inner_join(bg, by = "row_n") %>%
+  st_as_sf() %>% 
+  group_by(cd) %>% 
+  summarise(geometry = st_union(geometry)) %>% 
+  ungroup()
+
+## North-South
+ns_precincts <- 
+  st_intersection(
+    st_make_valid(select(sen_results, precinct_name, county)), 
+    ns_districts
+  ) %>% 
+  mutate(int_area = st_area(geometry)) %>% 
+  group_by(precinct_name, county) %>% 
+  arrange(desc(int_area)) %>% 
+  mutate(row_n = row_number()) %>% 
+  filter(row_n == 1) %>% 
+  ungroup() %>% 
+  st_set_geometry(value = NULL) %>% 
+  select(precinct_name, county, cd) 
+
+## East-West
+ew_districts <- 
+  alg_mcmc_ew$partitions %>% 
+  as_tibble() %>%
+  mutate(row_n = row_number()) %>%
+  rowwise() %>%
+  transmute(
+    row_n,
+    p_cd = mean(c_across(V1:V1000)),
+    cd = if_else(p_cd > .5, "D1", "D2")
+  ) %>%
+  inner_join(bg, by = "row_n") %>%
+  st_as_sf() %>% 
+  group_by(cd) %>% 
+  summarise(geometry = st_union(geometry)) %>% 
+  ungroup()
+
+ew_precincts <- 
+  st_intersection(
+    st_make_valid(select(sen_results, precinct_name, county)), 
+    ew_districts
+  ) %>% 
+  mutate(int_area = st_area(geometry)) %>% 
+  group_by(precinct_name, county) %>% 
+  arrange(desc(int_area)) %>% 
+  mutate(row_n = row_number()) %>% 
+  filter(row_n == 1) %>% 
+  ungroup() %>% 
+  st_set_geometry(value = NULL) %>% 
+  select(precinct_name, county, cd) 
+```
+
+Using data from the 2020 U.S. Senate race, I can project how a top-of-the-ticket Democrat would have fared in my hypothetical districts. The following maps show how Steve Bullock would have performed under these hypothetical plans, compared to the -10.0% margin he received when running at-large. 
+
+```{r}
+at_large <- 
+  (sum(sen_results$democrat) - sum(sen_results$republican)) / 
+  (sum(sen_results$democrat) + sum(sen_results$republican))
+
+mt_cities <- 
+  tribble(
+    ~ city, ~ initials, ~ lon, ~ lat,
+    "Bozeman", "BZ", -111.05, 45.68,
+    "Missoula", "M", -114.01, 46.87, 
+    "Helena", "H", -112.02, 46.6,
+    "Billings", "BL", -108.55, 45.79,
+    "Great Falls", "GF", -111.3, 47.5,
+    "Whitefish", "WF", -114.36, 48.43,
+    "Kalispell", "K", -114.13, 48.22,
+    "Butte-Silver Bow", "SB", -112.66, 45.9
+  )
+
+sen_results %>% 
+  inner_join(ns_precincts, by = c("precinct_name", "county")) %>% 
+  st_set_geometry(value = NULL) %>% 
+  group_by(cd) %>% 
+  summarise(
+    bullock = sum(democrat), 
+    daines = sum(republican), 
+    dem_margin = (bullock - daines) / (bullock + daines)
+  ) %>% 
+  inner_join(ns_districts, by = "cd") %>% 
+  mutate(centroid = st_centroid(geometry), lon = map_dbl(centroid, 1), lat = map_dbl(centroid, 2)) %>% 
+  st_as_sf() %>% 
+  ggplot() + 
+  geom_sf(size = .1, aes(fill = dem_margin)) +
+  geom_label(aes(lon, lat, label = scales::percent(dem_margin))) + 
+  geom_label(data = mt_cities, aes(lon, lat, label = initials), fill = "black", color = "white") + 
+  scale_fill_gradient2(
+    limits = c(-.15, .15), 
+    high = "dodger blue", 
+    low = "firebrick1", 
+    midpoint = 0,
+    labels = scales::percent_format(accuracy = 1)
+  ) + 
+  theme_void() + 
+  labs(
+    title = "Top of the ticket Democratic performance under hypothetical redistricting",
+    subtitle = paste("Compared to", scales::percent(at_large, accuracy = .1), "at-large"),
+    fill = "Projected margin",
+    caption = "Estimates based on 2020 U.S. Senate precinct-level vote totals"
+  )
+
+sen_results %>% 
+  inner_join(ew_precincts, by = c("precinct_name", "county")) %>% 
+  st_set_geometry(value = NULL) %>% 
+  group_by(cd) %>% 
+  summarise(
+    bullock = sum(democrat), 
+    daines = sum(republican), 
+    dem_margin = (bullock - daines) / (bullock + daines)
+  ) %>% 
+  inner_join(ew_districts, by = "cd") %>% 
+  mutate(centroid = st_centroid(geometry), lon = map_dbl(centroid, 1), lat = map_dbl(centroid, 2)) %>% 
+  st_as_sf() %>% 
+  ggplot() + 
+  geom_sf(size = .1, aes(fill = dem_margin)) +
+  geom_label(aes(lon, lat, label = scales::percent(dem_margin))) + 
+  geom_label(data = mt_cities, aes(lon, lat, label = initials), fill = "black", color = "white") + 
+  scale_fill_gradient2(
+    limits = c(-.15, .15), 
+    high = "dodger blue", 
+    low = "firebrick1", 
+    midpoint = 0,
+    labels = scales::percent_format(accuracy = 1)
+  ) + 
+  theme_void() + 
+  labs(
+    title = "Top of the ticket Democratic performance under hypothetical redistricting",
+    subtitle = paste("Compared to", scales::percent(at_large, accuracy = .1), "at-large"),
+    fill = "Projected margin",
+    caption = "Estimates based on 2020 U.S. Senate precinct-level vote totals"
+  )
+```
+
+Obviously, things aren't looking too pretty for Democrats in Montana right now. We put forward a terrific slate of candidates and a strong campaign in 2020, but came up far short of where we needed to be. But I have faith that the party will carve out new paths to victory and be back to winning elections sometime soon. And the good news is that redistricting is likely to work in their favor, especially if the commission uses a North-South dividing line to create eastern and western districts. 
+
+A western district would encompass high-growth counties like Missoula and Flathead, and if Democrats can stay competitive in Lewis & Clark while maintaining a foothold in Butte, they'll have a chance to make the inaugural race under a new, two-district map very competitive. The shame would be that votes from Bozeman, which is probably the Democrats fastest growing stronghold, would be subsumed by the heavily conservative precincts in Eastern Montana. A preferable map would carve out more of the Western district to include Bozeman at the expense of Great Falls and East Helena, though I haven't run the numbers on the population split and this would be harder to defend as politically neutral. 
+
+An East-West split, creating a northern district and a southern District, would be less advantageous. But this plan seems less likely to me — at a gut-level the map looks harder to justify, especially since the cultural divide in Montana is between the East and the West, and the two sides of the state would have fairly distinct preferences on a number of issues. 
+
+## Final thoughts
+
+There are variations that haven't been considered here, and in the case that Montana is awarded a second district, I'll be interested to see how the commission approaches their task. And while I'm selfishly hoping for a competitive Western district, I also respect the bipartisan and fair-minded process enshrined in Montana's laws. Montana is one of the few states that delegates redistricting to a balanced commission, and I have much more faith in the prospect of a fair outcome than I would if the maps were being drawn by the legislature, which is unfortunately the norm in most of the country. 
+
+Go Cats! 
+
+![[Source](https://www.everythingdoormats.com/montana-montana-state-house-divided-mat-34-x-445)](~/personal-website/content/post/mt-redistricting/featured.jpg)
