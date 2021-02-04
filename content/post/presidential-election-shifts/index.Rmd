@@ -38,7 +38,7 @@ state_fips <- read_csv(file_state_fips)
 file_counties <- "data/tl_2017_us_county/tl_2017_us_county.shp"
 county <- read_sf(file_counties) %>% 
   rename_all(str_to_lower) %>% 
-  mutate_if(is.factor, as.character) %>% 
+  mutate_if(is.factor, as.character) %>%
   inner_join(state_fips, by = c("statefp" = "st")) %>% 
   filter(!stusps %in% c("AK", "HI")) %>%  # only interested in continental US
   mutate(geoid = if_else(geoid == "46102", "46113", geoid)) # Data fix

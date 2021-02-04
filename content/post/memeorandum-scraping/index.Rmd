@@ -95,7 +95,7 @@ Once I had this working I iterated through each day of the year so far, pausing 
 
 {{% callout note %}}
 
-I was not able to find any guidance from _Memeorandum_ about their terms of use or scraping limits, so I tried to follow the basic etiquette [described here](https://benbernardblog.com/web-scraping-and-crawling-are-perfectly-legal-right/). If you plan on scraping _Memeorandum_ as well, be conservative and be considerate. And if you take issue with my appraoch, please [let me know](mailto::bchangsorensen@gmail.com)!
+I was not able to find any guidance from _Memeorandum_ about their terms of use or scraping limits, so I tried to follow the basic etiquette [described here](https://benbernardblog.com/web-scraping-and-crawling-are-perfectly-legal-right/). If you plan on scraping _Memeorandum_ as well, be conservative and be considerate. And if you take issue with my approach, please [let me know](mailto::bchangsorensen@gmail.com)!
 
 {{% /callout %}}
 
@@ -287,7 +287,7 @@ top_words %>%
   )
 ```
 
-Inspired by the [@NYT_first_said](https://twitter.com/NYT_first_said?s=20) bot on Twitter, which records the appearance of novel words in _The New York Times_ lexicon, I wanted to see how often _new_ words appeared on the main page — though for the purposes of this exercise, I'm only considering data from this year in my definition of "new." 
+Inspired by the @[NYT_first_said](https://twitter.com/NYT_first_said?s=20) bot on Twitter, which records the appearance of novel words in _The New York Times_ lexicon, I wanted to see how often _new_ words appeared on the main page — though for the purposes of this exercise, I'm only considering data from this year in my definition of "new." 
 
 ```{r}
 ## First appearances

@@ -35,7 +35,7 @@ state_fips &lt;- read_csv(file_state_fips)
 file_counties &lt;- &quot;data/tl_2017_us_county/tl_2017_us_county.shp&quot;
 county &lt;- read_sf(file_counties) %&gt;% 
   rename_all(str_to_lower) %&gt;% 
-  mutate_if(is.factor, as.character) %&gt;% 
+  mutate_if(is.factor, as.character) %&gt;%
   inner_join(state_fips, by = c(&quot;statefp&quot; = &quot;st&quot;)) %&gt;% 
   filter(!stusps %in% c(&quot;AK&quot;, &quot;HI&quot;)) %&gt;%  # only interested in continental US
   mutate(geoid = if_else(geoid == &quot;46102&quot;, &quot;46113&quot;, geoid)) # Data fix</code></pre>
