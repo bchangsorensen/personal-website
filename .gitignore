@@ -29,4 +29,4 @@ public/
 *.knit.md
 
 # Archived posts
-content/post/budget-relational
+content/post/budget-relational/*
