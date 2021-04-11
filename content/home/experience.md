@@ -18,6 +18,16 @@ date_format = "Jan 2006"
 #   Leave `date_end` empty if it's your current employer.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[experience]]
+  title = "Data Director"
+  company = "The Collective PAC"
+  company_url = "www.collectivepac.org"
+  location = "Remote"
+  date_start = "2021-04-01"
+  date_end = ""
+  description = """
+  """
+  
+[[experience]]
   title = "Deputy Data Director"
   company = "Montana Democratic Party (Coordinated Campaign)"
   company_url = "www.montanademocrats.org"
