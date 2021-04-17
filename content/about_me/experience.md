@@ -19,12 +19,13 @@ date_format = "Jan 2006"
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
 [[experience]]
   title = "Data Director"
-  company = "The Collective PAC"
+  company = "The Collective"
   company_url = "www.collectivepac.org"
   location = "Remote"
   date_start = "2021-04-01"
   date_end = ""
   description = """
+I lead the data department at The Collective, a group of affiliated organizations dedicated to building Black political power. 
   """
   
 [[experience]]

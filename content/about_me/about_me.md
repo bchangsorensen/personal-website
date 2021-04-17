@@ -13,8 +13,6 @@ After the election, I moved to Seattle for an exciting new challenge at {{< hl >
 
 In June of 2020 I decided to jump back into politics full-time with the {{< hl >}}Montana Democratic Party{{< /hl >}} in Helena. It wasn't an easy decision to leave Adaptive and move to a new state on short notice, but I couldn't pass up the chance to finally retake the Senate and knew that I had to be in the fight. We fell short in the end, but along the way I learned more than I could have imagined about organizing and campaigning, and I'm extremely proud of the program our data team put together. Montana also spoiled me, and some of my best memories are from the few days I got to steal away to go backpacking, camping, kayaking, or snowshoeing (pictured above). 
 
-These days I work as the data director for The Collective PAC, where our mission is to build Black political power.
-
 I love to work in R and the Tidyverse, a preference I picked up in Stanford's [Data Challenge Lab](https://dcl-docs.stanford.edu/home/)[^1] and which I'll probably never kick thanks to all the cool packages being developed by the R community (like `blogdown`, which helped me build this site). Outside of R I've worked extensively in SQL, Tableau, Sheets, and a bunch of campaign technologies like VoteBuilder and Civis. I'm always looking to learn more! 
 
 Lastly, I'm motivated by some of the issues that are most important to me: tackling the climate crisis, fixing our broken democracy, and fighting for racial equality. I'm also motivated by organizers and activists -- people in the fight -- and I believe that together we can make some progress and change some minds. If that sounds like you, [please get in touch!](mailto:bchangsorensen@gmail.com)
