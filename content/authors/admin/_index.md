@@ -6,7 +6,7 @@ title: Benjamin Chang Sorensen
 superuser: true
 
 # Role/position
-role: Seattle, WA • he/him
+role: Baltimore, MD • he/him
 
 # Organizations/Affiliations
 #organizations:
@@ -64,4 +64,4 @@ highlight_name: false
 ---
 # Hello! 
 
-I’m a progressive data analyst in Seattle, and I currently work as the data director for [The Collective](http://collectivepac.org/), a group of organizations dedicated to building Black political power in America. I previously worked on two of the top Democratic Senate races of the Trump era and helped build business intelligence at a rapidly growing biotech company. This site is where I'll share some of my work and the things I'm learning along the way, mostly using R. You can learn more about me {{< hl >}}[here](/about_me/).{{< /hl >}}
+I’m a progressive data analyst in Baltimore, and I currently work as the data director for [The Collective](http://collectivepac.org/), a group of organizations dedicated to building Black political power in America. I previously worked on two of the top Democratic Senate races of the Trump era and helped build business intelligence at a rapidly growing biotech company. This site is where I'll share some of my work and the things I'm learning along the way, mostly using R. You can learn more about me {{< hl >}}[here](/about_me/).{{< /hl >}}
