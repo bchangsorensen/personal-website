@@ -3,7 +3,7 @@
 
 # Hugo
 /resources/
-public/
+/public/
 .Rproj.user
 
 # R
@@ -28,3 +28,6 @@ public/
 *.utf8.md
 *.knit.md
 
+.DS_Store
+Thumbs.db
+.hugo_build.lock

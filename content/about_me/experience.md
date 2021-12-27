@@ -25,8 +25,19 @@ date_format = "Jan 2006"
   date_start = "2021-04-01"
   date_end = ""
   description = """
-I lead the data department at The Collective, a group of affiliated organizations dedicated to building Black political power. 
+I lead the data department at The Collective, where I’m responsible for the organization’s analytics infrastructure. In addition to building and maintaining our technical capacity, I help guide The Collective’s research initiatives and electoral strategies, and manage and train a data analyst.
   """
+  
+[[experience]]
+  title = "Advisor (Volunteer)"
+  company = "Karen Pérez-Da Silva for Beaverton School District"
+  company_url = "https://www.facebook.com/Karen-P%C3%A9rez-Da-Silva-for-BSD-School-Board-104057458298200/"
+  location = "Remote"
+  date_start = "2021-01-15"
+  date_end = "2021-05-18"
+  description = """
+I devised a voter mobilization strategy for the campaign and crafted target universes for our field efforts. Our campaign led a slate of progressive newcomers to decisive victory over a group of anti-CRT candidates.
+  """  
   
 [[experience]]
   title = "Deputy Data Director"
@@ -36,9 +47,7 @@ I lead the data department at The Collective, a group of affiliated organization
   date_start = "2020-06-11"
   date_end = "2020-11-30"
   description = """
-  * Developed a full analytics stack in Civis, including a custom data mart for managing secretary of state data.
-  * Served as point-person for the voter protection team and designed the infrastructure behind our ballot chase system.
-  * Provided mobilization and analytical support to the field, Native vote, and digital teams.
+I served as point-person for the voter protection team, and designed the infrastructure and data models behind our absentee reporting and ballot chase systems. I also provided mobilization and analytic support to the field, Native vote, and digital teams.
   """
 
 [[experience]]
@@ -49,8 +58,7 @@ I lead the data department at The Collective, a group of affiliated organization
   date_start = "2018-11-19"
   date_end = "2020-06-05"
   description = """
-  * Provided business analytics to stakeholders across the company, from finance to sales to lab ops.
-  * Contributed to reporting infrastructure with data mart development, data source design, and report creation.
+I provided business analysis to stakeholders across the company and contributed to the company’s first data mart in an effort to ease report creation and insight generation.
   """
 [[experience]]
   title = "Data Director (part-time)"
@@ -60,8 +68,7 @@ I lead the data department at The Collective, a group of affiliated organization
   date_start = "2019-05-15"
   date_end = "2019-11-15"
   description = """
-  * Provided analytical and technical support to our grassroots city council campaign.
-  * Reported on organizing and fundraising efforts and administered VoteBuilder and Hustle for the campaign.
+I provided analytical and technical support to our grassroots city council campaign. 
   """
 [[experience]]
   title = "Deputy Data Director"
@@ -71,8 +78,7 @@ I lead the data department at The Collective, a group of affiliated organization
   date_start = "2018-08-01"
   date_end = "2018-11-16"
   description = """
-  * Built dashboards and reports to inform field and voter protection strategy.
-  * Prioritized staging locations and polling sites during GOTV.
+I built dashboards, wrote reports, and provided technical support for the campaign’s field and voter protection programs.
   """
   
 +++
