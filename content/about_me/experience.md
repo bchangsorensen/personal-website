@@ -17,16 +17,28 @@ date_format = "Jan 2006"
 #   Required fields are `title`, `company`, and `date_start`.
 #   Leave `date_end` empty if it's your current employer.
 #   Begin/end multi-line descriptions with 3 quotes `"""`.
+
+[[experience]]
+  title = "Data Engineer"
+  company = "ACLU"
+  company_url = "www.aclu.org"
+  location = "Remote"
+  date_start = "2022-04-01"
+  date_end = ""
+  description = """
+  """
+  
 [[experience]]
   title = "Data Director"
   company = "The Collective"
   company_url = "www.collectivepac.org"
   location = "Remote"
   date_start = "2021-04-01"
-  date_end = ""
+  date_end = "2022-03-18"
   description = """
-I lead the data department at The Collective, where I’m responsible for the organization’s analytics infrastructure. In addition to building and maintaining our technical capacity, I help guide The Collective’s research initiatives and electoral strategies, and manage and train a data analyst.
+I led the data department at The Collective, where I was responsible for the organization’s analytics infrastructure. In addition to building and maintaining technical capacity, I helped guide The Collective’s research initiatives and electoral strategies, and managed and trained a data analyst.
   """
+  
   
 [[experience]]
   title = "Advisor (Volunteer)"

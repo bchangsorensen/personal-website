@@ -14,7 +14,7 @@ role: Baltimore, MD • he/him
 #  url: ""
 
 # Short bio (displayed in user profile at end of posts)
-# bio: Progressive data analyst interested in campaigns, climate justice, and more. 
+# bio: Progressive data analyst interested in campaigns, climate justice, and civil liberties. 
 
 #interests:
 #- R and the Tidyverse
@@ -64,4 +64,4 @@ highlight_name: false
 ---
 # Hello! 
 
-I’m a progressive data analyst in Baltimore, and I currently work as the data director for [The Collective](http://collectivepac.org/), a group of organizations dedicated to building Black political power in America. I previously worked on two of the top Democratic Senate races of the Trump era and helped build business intelligence at a rapidly growing biotech company. This site is where I'll share some of my work and the things I'm learning along the way, mostly using R. You can learn more about me {{< hl >}}[here](/about_me/).{{< /hl >}}
+I’m a progressive data professional in Baltimore, and I currently work as a data engineer for the [ACLU](http://aclu.org/). I previously worked on two of the top Democratic Senate races of the Trump era, helped build business intelligence at a rapidly growing biotech company, and led the data department of a national advocacy organization. This site is where I'll share some of my work and the things I'm learning along the way, mostly using R. You can learn more about me {{< hl >}}[here](/about_me/).{{< /hl >}}
