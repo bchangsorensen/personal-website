@@ -5,7 +5,7 @@ weight: 10
 title: Hi! I'm Benjamin. 
 ---
 
-I'm a progressive data professional in Baltimore, and I currently work as a data engineer for the {{< hl >}}ACLU{{< /hl >}}. I grew up in Palo Alto before heading down the road to {{< hl >}}Stanford University{{< /hl >}} for undergrad, where I studied political science, statistics, and history. I wrote an honors thesis about leaks as disinformation, centered on an online experiment I designed and implemented in my senior year. 
+I'm a progressive analytics engineer in Baltimore, currently working as a data engineer for the {{< hl >}}ACLU{{< /hl >}}. I grew up in Palo Alto before heading down the road to {{< hl >}}Stanford University{{< /hl >}} for undergrad, where I studied political science, statistics, and history. I wrote an honors thesis about leaks as disinformation, centered on an online experiment I designed and implemented in my senior year. 
 
 After graduating in 2018, I joined the {{< hl >}}Nevada State Democratic Party's{{< /hl >}} coordinated campaign as a data associate, and was promoted to deputy data director that fall. I got hooked on electoral politics in Nevada: there's something about the people you meet and work with on campaigns that can't be beat. There's also something to be said about winning in Las Vegas.
 
