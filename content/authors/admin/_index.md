@@ -64,4 +64,4 @@ highlight_name: false
 ---
 # Hello! 
 
-I’m a progressive analytics engineer in Baltimore, currently working as a data engineer for the [ACLU](http://aclu.org/). I previously worked on two of the top Democratic Senate races of the Trump era, helped build business intelligence at a rapidly growing biotech company, and led the data department of a national advocacy organization. This site is where I'll share some of my work and the things I'm learning along the way, mostly using R. You can learn more about me {{< hl >}}[here](/about_me/).{{< /hl >}}
+I’m a progressive analytics engineer in Baltimore, currently working as a data engineer for the [ACLU](http://aclu.org/). I previously worked on two of the top Democratic Senate races of the Trump era, helped build business intelligence at a rapidly growing biotech company, and led the data department of a national advocacy organization. 
