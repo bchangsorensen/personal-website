@@ -43,7 +43,7 @@ social:
   link: https://www.linkedin.com/in/benjamin-sorensen-114110110/
 - icon: github
   icon_pack: fab
-  link: https://github.com/bsorensen96
+  link: https://github.com/bchangsorensen
 # Link to a PDF of your resume/CV from the About widget.
 # To enable, copy your resume/CV to `static/files/cv.pdf` and uncomment the lines below.
 - icon: cv
